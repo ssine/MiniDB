@@ -1,0 +1,20 @@
+{
+  "name": "minidb",
+  "version": "0.0.1",
+  "description": "a core implementation of dbms",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "start": "npm run build && electron ./js/main.js",
+    "cc": "jison ./ts/parser/grammar.jison -o ./ts/parser/parser.ts & copy .\\ts\\parser\\parser.ts .\\js\\parser\\parser.js /Y"
+  },
+  "author": "sine",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "4.0.2",
+    "jison": "^0.4.18",
+    "typescript": "^3.2.4",
+    "xterm": "^3.10.1"
+  }
+}
