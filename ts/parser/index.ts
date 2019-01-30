@@ -5,13 +5,13 @@ parser.yy.extend = function() {
   if (typeof target != "object" && typeof target != "function") {
     target = {};
   }
-  for (let i = 1; i < arguments.length; i++) { 
-    let source = arguments[i]; 
-    for (let key in source) { 
-      target[key] = source[key]; 
-    } 
+  for (let i = 1; i < arguments.length; i++) {
+    let source = arguments[i];
+    for (let key in source) {
+      target[key] = source[key];
+    }
   }
-  return target; 
+  return target;
 }
 
 export { parser }

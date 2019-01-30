@@ -2,35 +2,28 @@
 // be executed in the renderer process for that window.
 // All of the Node.js APIs are available in this process.
 import { parser } from './parser'
-import { Terminal } from 'xterm'
+import { Term } from './terminal'
+import { remote } from 'electron'
+import { Table, Database } from './data'
 
-let term = new Terminal()
-term.open(document.getElementById('terminal'))
+let term = new Term(document.getElementById('terminal-container'));
 
-let input = ''
-
-term.on('key', (key, ev) => {
-  const printable = !ev.altKey && !ev.ctrlKey && !ev.metaKey;
-
-  if (ev.keyCode === 13) {
-    term.write('\r\n$ ');
-    console.log(input)
-    try {
-      console.log(parser.parse(input))
-    } catch (error) {
-      term.write('\r\n$ parse error');
-    }
-    input = ''
-  } else if (ev.keyCode === 8) {
-    // Do not delete the prompt
-    if (input.length > 0) {
-      term.write('\b \b');
-      input = input.substr(0, input.length - 1)
-    }
-  } else if (printable) {
-    term.write(key);
-    input += key
+function getInput(input: string): string {
+  let cmd = input.trim().toLowerCase().substr(0, 4);
+  if (cmd == 'exit') {
+    remote.getCurrentWindow().close();
+    return '';
+  } else if (cmd == 'file') {
+    // open the file and return
+    return '';
   }
-})
+  
+  let tree = parser.parse(input);
+  return JSON.stringify(tree);
+}
 
-term.write('$ ');
+term.listener = getInput;
+
+let dbs = {
+  'test': new Database('test')
+}

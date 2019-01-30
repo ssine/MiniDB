@@ -12,6 +12,9 @@
 
 'CREATE'                                        return 'CREATE'        
 'TABLE'                                         return 'TABLE'       
+'INSERT'                                        return 'INSERT'    
+'INTO'                                          return 'INTO'  
+'VALUES'                                        return 'VALUES'  
 
 [-]?(\d*[.])?\d+[eE]\d+							return 'NUMBER'
 [-]?(\d*[.])?\d+								return 'NUMBER'
@@ -94,6 +97,7 @@ sql_stmt
 
 sql_stmt
     : create_table_stmt
+    | insert_stmt
     ;
 
 create_table_stmt
@@ -134,4 +138,55 @@ column_def
 type_name
 	: name
 		{ $$ = {type: $1.toUpperCase()}; }
+	;
+
+
+insert_stmt
+	: INSERT INTO database_table_name columns_par insert_values
+		{ 
+			$$ = {statement: 'INSERT'};
+			yy.extend($$,$3);
+			yy.extend($$,$4);
+			yy.extend($$,$5);
+		}
+	;
+
+columns_par
+	: 
+		{ $$ = undefined; }
+	| LPAR columns RPAR
+		{ $$ = {columns: $2}}
+	;
+
+columns
+	: columns COMMA name
+		{ $$ = $1; $$.push($3); }
+	| name
+		{ $$ = [$1]; }
+	;
+
+insert_values
+	: VALUES LPAR subvalues RPAR
+		{ $$ = {values: $3}; }
+	;
+
+subvalues
+	: subvalues COMMA expr
+		{ $$ = $1; $$.push($3); }
+	| expr
+		{ $$ = [$1]; }
+	;
+
+expr
+	: literal_value
+		{ $$ = $1; }
+	| NULL
+		{ $$ = {type:'NULL'}; }
+    ;
+
+literal_value
+	: NUMBER
+		{ $$ = {type:'number', number: parseFloat($1)}; }
+	| STRING
+		{ $$ = {type:'string', string: $1}}
 	;
