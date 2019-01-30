@@ -15,7 +15,11 @@ term.on('key', (key, ev) => {
   if (ev.keyCode === 13) {
     term.write('\r\n$ ');
     console.log(input)
-    console.log(parser.parse(input))
+    try {
+      console.log(parser.parse(input))
+    } catch (error) {
+      term.write('\r\n$ parse error');
+    }
     input = ''
   } else if (ev.keyCode === 8) {
     // Do not delete the prompt
