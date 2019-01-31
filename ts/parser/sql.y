@@ -10,11 +10,12 @@
 
 \s+   											/* skip whitespace */
 
-'CREATE'                                        return 'CREATE'        
-'TABLE'                                         return 'TABLE'       
-'INSERT'                                        return 'INSERT'    
-'INTO'                                          return 'INTO'  
-'VALUES'                                        return 'VALUES'  
+'CREATE'                                        return 'CREATE'
+'TABLE'                                         return 'TABLE'
+'DATABASE'                                      return 'DATABASE'
+'INSERT'                                        return 'INSERT'
+'INTO'                                          return 'INTO'
+'VALUES'                                        return 'VALUES'
 
 [-]?(\d*[.])?\d+[eE]\d+							return 'NUMBER'
 [-]?(\d*[.])?\d+								return 'NUMBER'
@@ -97,6 +98,7 @@ sql_stmt
 
 sql_stmt
     : create_table_stmt
+    | create_database_stmt
     | insert_stmt
     ;
 
@@ -132,7 +134,7 @@ column_defs
 
 column_def
     : name type_name
-        { $$ = {column:$1}; yy.extend($$,$2); }
+        { $$ = {column:$1}; yy.extend($$, $2); }
     ;
 
 type_name
@@ -140,19 +142,21 @@ type_name
 		{ $$ = {type: $1.toUpperCase()}; }
 	;
 
+create_database_stmt
+    : CREATE DATABASE name
+        { $$ = {statement: 'CREATE DATABASE', database: $3 }}
+    ;
 
 insert_stmt
 	: INSERT INTO database_table_name columns_par insert_values
-		{ 
+		{
 			$$ = {statement: 'INSERT'};
-			yy.extend($$,$3);
-			yy.extend($$,$4);
-			yy.extend($$,$5);
+			yy.extend($$, $3, $4, $5);
 		}
 	;
 
 columns_par
-	: 
+	:
 		{ $$ = undefined; }
 	| LPAR columns RPAR
 		{ $$ = {columns: $2}}
@@ -166,8 +170,20 @@ columns
 	;
 
 insert_values
-	: VALUES LPAR subvalues RPAR
-		{ $$ = {values: $3}; }
+	: VALUES values
+		{ $$ = {values: $2}; }
+    ;
+
+values
+	: values COMMA value
+		{ $$ = $1; $$.push($3); }
+	| value
+		{ $$ = [$1]; }
+	;
+
+value
+	: LPAR subvalues RPAR
+		{ $$ = $2; }
 	;
 
 subvalues

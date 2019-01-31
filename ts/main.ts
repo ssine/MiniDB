@@ -8,6 +8,9 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     height: 400,
     width: 800,
+    webPreferences: {
+      nodeIntegration: true
+    }
   });
 
   // and load the index.html of the app.

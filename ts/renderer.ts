@@ -6,19 +6,25 @@ import { Term } from './terminal'
 import { remote } from 'electron'
 import { SystemData } from './data'
 import { interpret } from './interpreter'
+import * as fs from 'fs'
 
 let sys_data = new SystemData();
 
 let term = new Term(document.getElementById('terminal-container'));
 
 term.listener = (input: string): string => {
-  let cmd = input.trim().toLowerCase().substr(0, 4);
+  input = input.trim();
+  let cmd = input.toLowerCase().substr(0, 4);
   if (cmd == 'exit') {
+    sys_data.save();
     remote.getCurrentWindow().close();
     return '';
-  } else if (cmd == 'file') {
-    // open the file and return
-    return '';
+  }
+  
+  if (cmd == 'file') {
+    // open the file as input
+    let path = input.substring(4, input.length - 1).trim();
+    input = fs.readFileSync(path).toString();
   }
   
   let trees = parser.parse(input);
@@ -28,10 +34,12 @@ term.listener = (input: string): string => {
     switch (tree.statement) {
       case 'CREATE TABLE':
       case 'CREATE DATABASE':
+      case 'INSERT':
         res = interpret(tree, sys_data);
-        console.log('create triggered', sys_data);
+        console.log(sys_data);
         break;
       case 'SELECT':
+        res = 'Action not yet implemented.';
         break;
     }
   });
