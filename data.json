@@ -1,1 +1,1 @@
-{"dbs":{"test":{"name":"test","tables":{}},"lsy":{"name":"lsy","tables":{}}},"cur_db":"test"}
+{"dbs":{"test":{"name":"test","tables":{"test":{"name":"test","col_names":["prop1","prop2"],"types":["NUMBER","STRING"],"num_cols":2,"data":[[1,"123"],[2,"456"],[3,"789"]]},"t":{"name":"t","col_names":["id","name"],"types":["NUMBER","STRING"],"num_cols":2,"data":[[1,"sine"],[2,"flipped"]]}}},"lsy":{"name":"lsy","tables":{}}},"cur_db":"test"}

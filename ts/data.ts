@@ -18,14 +18,13 @@ class Table {
       });
     }
     this.num_cols = this.col_names.length;
+    this.data = [];
   }
 
   load(data: any) {
     // load basic info
     for (let key in data) {
-      if (typeof this[key] != "object") {
-        this[key] = data[key];
-      }
+      this[key] = data[key];
     }
   }
 
@@ -33,13 +32,17 @@ class Table {
     this.data.push(row);
   }
 
-  insert(values: any[]) {
-    values.forEach(element => {
-      this.data.push(element);
+  insert(values: any[][]) {
+    values.forEach(row => {
+      let cur = [];
+      row.forEach(element => {
+        cur.push(element.data);
+      })
+      this.data.push(cur);
     });
   }
 
-  insert_partial(cols: string[], values: any[]) {
+  insert_partial(cols: string[], values: any[][]) {
     let mask = new Int32Array(this.num_cols);
     for (let idx = 0; idx < this.col_names.length; idx++)
       if (this.col_names[idx] in cols)
@@ -50,7 +53,7 @@ class Table {
       let val_idx = 0;
       for (let idx = 0; idx < mask.length; idx++)
         if (mask[idx])
-          cur[idx] = row[val_idx++];
+          cur[idx] = values[row][val_idx++].data;
       this.data.push(cur);
     }
   }

@@ -35,10 +35,11 @@ term.listener = (input: string): string => {
       case 'CREATE TABLE':
       case 'CREATE DATABASE':
       case 'INSERT':
+      case 'SELECT':
         res = interpret(tree, sys_data);
         console.log(sys_data);
         break;
-      case 'SELECT':
+      default:
         res = 'Action not yet implemented.';
         break;
     }

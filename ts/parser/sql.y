@@ -16,6 +16,14 @@
 'INSERT'                                        return 'INSERT'
 'INTO'                                          return 'INTO'
 'VALUES'                                        return 'VALUES'
+'SELECT'                                        return 'SELECT'              
+'AS'                                            return 'AS'          
+'FROM'                                          return 'FROM'            
+'JOIN'                                          return 'JOIN'            
+'INNER'                                         return 'INNER'             
+'CROSS'                                         return 'CROSS'             
+'ON'                                            return 'ON'          
+'WHERE'                                         return 'WHERE'             
 
 [-]?(\d*[.])?\d+[eE]\d+							return 'NUMBER'
 [-]?(\d*[.])?\d+								return 'NUMBER'
@@ -100,6 +108,7 @@ sql_stmt
     : create_table_stmt
     | create_database_stmt
     | insert_stmt
+    | select_stmt
     ;
 
 create_table_stmt
@@ -198,11 +207,129 @@ expr
 		{ $$ = $1; }
 	| NULL
 		{ $$ = {type:'NULL'}; }
+	| name
+		{ $$ = {column: $1}; }
+	| name DOT name
+		{ $$ = {table: $1, column: $3}; }
+	| name DOT name DOT name
+		{ $$ = {database: $1, table: $3, column: $5}; }
+
+	| expr EQ expr
+		{ $$ = {op: 'EQ', left: $1, right: $3}; }
+	| expr NE expr
+		{ $$ = {op: 'NE', left: $1, right: $3}; }
+	| expr GT expr
+		{ $$ = {op: 'GT', left: $1, right: $3}; }
+	| expr GE expr
+		{ $$ = {op: 'GE', left: $1, right: $3}; }
+	| expr LT expr
+		{ $$ = {op: 'LT', left: $1, right: $3}; }
+	| expr LE expr
+		{ $$ = {op: 'LE', left: $1, right: $3}; }
+
+	| expr AND expr
+		{ $$ = {op: 'AND', left: $1, right: $3}; }
+	| expr OR expr
+		{ $$ = {op: 'OR', left: $1, right: $3}; }
     ;
 
 literal_value
 	: NUMBER
-		{ $$ = {type:'number', number: parseFloat($1)}; }
+		{ $$ = {type:'number', data: parseFloat($1)}; }
 	| STRING
-		{ $$ = {type:'string', string: $1}}
+		{ $$ = {type:'string', data: $1.substring(1, $1.length - 1)}}
+	;
+
+select_stmt
+	: compound_selects
+		{
+			$$ = {statement: 'SELECT', selects: $1};
+		}
+	;
+
+compound_selects
+	: select
+		{ $$ = [$1]; }
+	;
+
+select
+	: SELECT result_columns from where
+		{
+			$$ = {};
+			yy.extend($$, $2, $3, $4);
+		}
+	;
+
+result_columns
+	: result_columns COMMA result_column
+		{ $$ = $1; $$.push($3); }
+	| result_column
+		{ $$ = [$1]; }
+	;
+
+result_column
+	: STAR
+		{ $$ = {star: true}; }
+	| name DOT STAR
+		{ $$ = {table: $1, star: true}; }
+	| expr alias
+		{ $$ = {expr: $1}; yy.extend($$, $2);  }
+	;
+
+alias
+	:
+		{ $$ = undefined;}
+	| name
+		{ $$ = {alias: $1};}
+	| AS name
+		{ $$ = {alias: $2};}
+	;
+
+from
+	: FROM join_clause
+		{ $$ = {from: $2}; }
+	;
+
+join_clause
+	: table_or_subquery
+		{ $$ = [$1]; }
+	| join_clause join_operator table_or_subquery join_constraint
+		{
+			yy.extend($3, $2, $4);
+			$$.push($3);
+		}
+	;
+
+table_or_subquery
+	: database_table_name alias
+		{ $$ = $1; yy.extend($$, $2); }
+	;
+
+join_operator
+	: COMMA
+		{ $$ = {join_type: 'CROSS'}; }
+	| join_type JOIN
+		{ $$ = $1; }
+	;
+
+join_type
+	:
+		{ $$ = {join_type: 'INNER'}; }
+	| INNER
+		{ $$ = {join_type: 'INNER'}; }
+	| CROSS
+		{ $$ = {join_type: 'CROSS'}; }
+	;
+
+join_constraint
+	:
+		{ $$ = undefined; } 
+	| ON expr
+		{ $$ = {on: $2}; }
+	;
+
+where
+	: WHERE expr
+		{ $$ = {where: $2}; }
+	|
 	;

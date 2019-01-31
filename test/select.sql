@@ -1,0 +1,1 @@
+select *, test.*, prop1 as p from test where prop1 <= prop2;
