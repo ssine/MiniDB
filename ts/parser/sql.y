@@ -16,14 +16,17 @@
 'INSERT'                                        return 'INSERT'
 'INTO'                                          return 'INTO'
 'VALUES'                                        return 'VALUES'
-'SELECT'                                        return 'SELECT'              
-'AS'                                            return 'AS'          
-'FROM'                                          return 'FROM'            
-'JOIN'                                          return 'JOIN'            
-'INNER'                                         return 'INNER'             
-'CROSS'                                         return 'CROSS'             
-'ON'                                            return 'ON'          
-'WHERE'                                         return 'WHERE'             
+'SELECT'                                        return 'SELECT'
+'AS'                                            return 'AS'
+'FROM'                                          return 'FROM'
+'JOIN'                                          return 'JOIN'
+'INNER'                                         return 'INNER'
+'OUTER'                                         return 'OUTER'
+'CROSS'                                         return 'CROSS'
+'ON'                                            return 'ON'
+'WHERE'                                         return 'WHERE'
+'AND'                                           return 'AND'
+'OR'                                            return 'OR'
 
 [-]?(\d*[.])?\d+[eE]\d+                         return 'NUMBER'
 [-]?(\d*[.])?\d+                                return 'NUMBER'
@@ -259,19 +262,17 @@ select
     ;
 
 result_columns
-    : result_columns COMMA result_column
-        { $$ = $1; $$.push($3); }
-    | result_column
-        { $$ = [$1]; }
+    : column_list
+        { $$ = {star: false, result_columns: $1}; }
+	| STAR
+		{ $$ = {star: true}; }
     ;
 
-result_column
-    : STAR
-        { $$ = {star: true}; }
-    | name DOT STAR
-        { $$ = {table: $1, star: true}; }
-    | expr alias
-        { $$ = {expr: $1}; yy.extend($$, $2);  }
+column_list
+    : column_list COMMA name
+        { $$ = $1; $$.push($3); }
+    | name
+        { $$ = [$1]; }
     ;
 
 alias
@@ -321,7 +322,7 @@ join_type
 
 join_constraint
     :
-        { $$ = undefined; } 
+        { $$ = undefined; }
     | ON expr
         { $$ = {on: $2}; }
     ;

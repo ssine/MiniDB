@@ -57,6 +57,32 @@ function eval_cond_expr(tb1: Table, tb2: Table, tree: any, i: number, j: number)
   throw 'not a valid conditional expression!';
 }
 
+function eval_where_expr(tb: Table, tree: any, pos: number): boolean {
+  if (!tree.op) throw 'not conditional expression!';
+  switch (tree.op) {
+    case 'AND':
+      return eval_where_expr(tb, tree.left, pos) && eval_where_expr(tb, tree.right, pos);
+    case 'OR':
+      return eval_where_expr(tb, tree.left, pos) || eval_where_expr(tb, tree.right, pos);
+  }
+
+  switch (tree.op) {
+    case 'EQ':
+      return eval_valu_expr(tb, tree.left, pos) == eval_valu_expr(tb, tree.right, pos);
+    case 'NE':
+      return eval_valu_expr(tb, tree.left, pos) != eval_valu_expr(tb, tree.right, pos);
+    case 'GT':
+      return eval_valu_expr(tb, tree.left, pos) > eval_valu_expr(tb, tree.right, pos);
+    case 'GE':
+      return eval_valu_expr(tb, tree.left, pos) >= eval_valu_expr(tb, tree.right, pos);
+    case 'LT':
+      return eval_valu_expr(tb, tree.left, pos) < eval_valu_expr(tb, tree.right, pos);
+    case 'LE':
+      return eval_valu_expr(tb, tree.left, pos) <= eval_valu_expr(tb, tree.right, pos);
+  }
+  throw 'not a valid conditional expression!';
+}
+
 function tableJoin(tb1: Table, tb2: Table, type: ('inner'|'cross'), on?: any): Table {
   let tb = new Table(tb2.name);
   tb.col_names = tb1.col_names.concat(tb2.col_names);
@@ -86,4 +112,28 @@ function tableJoin(tb1: Table, tb2: Table, type: ('inner'|'cross'), on?: any): T
   return tb;
 }
 
-export { tableJoin };
+function tableFilter(tb: Table, cond: any): Table {
+  for (let i = tb.data.length - 1; i >= 0; i--) {
+    if (!eval_where_expr(tb, cond, i))
+      tb.data.splice(i, 1);
+  }
+  return tb;
+}
+
+function tableMask(tb: Table, cols: string[]): Table {
+  let idx_map = new Int32Array(cols.length);
+  for (let i = 0; i < idx_map.length; i++) {
+    idx_map[i] = tb.col_names.indexOf(cols[i]);
+  }
+  tb.col_names = cols;
+  for (let i = 0; i < tb.data.length; i++) {
+    let cur = [];
+    for (let j = 0; j < idx_map.length; j++) {
+      cur.push(tb.data[i][idx_map[j]]);
+    }
+    tb.data[i] = cur;
+  }
+  return tb;
+}
+
+export { tableJoin, tableFilter, tableMask };

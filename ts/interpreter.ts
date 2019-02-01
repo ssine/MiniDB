@@ -5,7 +5,7 @@
  * Well, some DMLs are also implemented here for simplicity
  */
 import { Table, Database, SystemData } from './data'
-import { tableJoin } from './executer'
+import { tableJoin, tableFilter, tableMask } from './executer'
 
 function getTable(data: SystemData, clause: any): Table {
   let db = clause.database ? clause.database : data.cur_db;
@@ -85,8 +85,8 @@ function interpret(tree: any, data: SystemData): string {
     }
     case 'SELECT': {
       let sel = tree.selects[0];
-      let from_table = getTable(data, sel.from[0]);
 
+      let from_table = getTable(data, sel.from[0]);
       for (let i = 1; i < sel.from.length; i++) {
         from_table = tableJoin(from_table,
                                getTable(data, sel.from[i]),
@@ -94,6 +94,13 @@ function interpret(tree: any, data: SystemData): string {
                                sel.from[i].on);
       }
 
+      if (sel.where)
+        from_table = tableFilter(from_table, sel.where);
+      
+      if (!sel.star)
+        from_table = tableMask(from_table, sel.result_columns);
+      console.log(from_table);
+      console.log('from_table');
       // let tb = from_table.data;
       // let idx1 = from_table.col_names.indexOf(sel);
 

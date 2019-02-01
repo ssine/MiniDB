@@ -1,6 +1,6 @@
 CREATE TABLE bank (
-    id    number,
-    name  string
+    bank_id number,
+    name    string
 );
 
 INSERT INTO bank VALUES
@@ -12,7 +12,7 @@ INSERT INTO bank VALUES
 ;
 
 CREATE TABLE account (
-    id         number,
+    account_id number,
     owner_name string
 );
 
@@ -29,6 +29,9 @@ CREATE TABLE deposit (
 
 INSERT INTO deposit VALUES
     (1, 1, 1000),
-    (2, 1, 1000),
-    (1, 4, 5000)
+    (1, 1, 2000),
+    (1, 3, 3000),
+    (1, 4, 4000),
+    (2, 1, 5000),
+    (2, 4, 6000)
 ;
