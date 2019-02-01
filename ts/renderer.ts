@@ -13,6 +13,9 @@ let sys_data = new SystemData();
 let term = new Term(document.getElementById('terminal-container'));
 
 term.listener = (input: string): string => {
+
+  let timer = new Date().valueOf();
+
   input = input.trim();
   let cmd = input.toLowerCase().substr(0, 4);
   if (cmd == 'exit') {
@@ -36,13 +39,17 @@ term.listener = (input: string): string => {
       case 'CREATE DATABASE':
       case 'INSERT':
       case 'SELECT':
-        res = interpret(tree, sys_data);
+        res += interpret(tree, sys_data) + '\r\n';
         console.log(sys_data);
         break;
       default:
-        res = 'Action not yet implemented.';
+        res += 'Action not yet implemented.\r\n';
         break;
     }
   });
+
+  let interval = (new Date().valueOf() - timer) / 1000;
+
+  res = res.trim() + '\r\nquery finished in ' + interval.toString() + ' seconds.';
   return res;
 }

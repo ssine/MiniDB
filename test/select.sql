@@ -1,1 +1,2 @@
-select *, test.*, prop1 as p from test where prop1 <= prop2;
+SELECT name
+FROM bank, deposit;

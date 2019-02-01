@@ -1,11 +1,14 @@
 import { Terminal } from 'xterm'
+import * as fit from 'xterm/lib/addons/fit/fit';
+
+Terminal.applyAddon(fit);
 
 class Term {
   term: Terminal;
   input: string = '';
   history: string[] = [];
   listener: (input: string) => string;
-  state: ( 'single_line' | 'multi_line' ) = 'single_line';
+  state: ('single_line'|'multi_line') = 'single_line';
 
   prompt() {
     switch(this.state) {
@@ -27,6 +30,12 @@ class Term {
       }
     });
     this.term.open(container);
+    // @ts-ignore
+    this.term.fit();
+    window.onresize = _ => {
+      // @ts-ignore
+      this.term.fit();
+    }
     this.term.writeln('Welcome to MiniDB!');
     this.prompt();
 
@@ -51,11 +60,11 @@ class Term {
             let res: string;
             try {
               res = this.listener(this.input);
+              this.term.writeln(res.trim());
             } catch (error) {
               console.log(error);
               this.term.writeln('parse error');
             }
-            this.term.writeln(res);
             this.history.push(this.input);
             this.input = ''
             this.state = 'single_line';

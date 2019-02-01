@@ -1,19 +1,24 @@
 /* Execute Data Definition Language from parse tree directly
  * Input: a parse tree
  * Output: execution result
- * 
+ *
  * Well, some DMLs are also implemented here for simplicity
  */
 import { Table, Database, SystemData } from './data'
+import { tableJoin } from './executer'
 
 function getTable(data: SystemData, clause: any): Table {
   let db = clause.database ? clause.database : data.cur_db;
   return data.dbs[db].tables[clause.table];
 }
 
+function charRepeat(c: string, n: number): string {
+  return Array(n + 1).join(c);
+}
+
 function outputTable(tb: Table): string {
   let res = '';
-  let lens = new Array(tb.num_cols);
+  let lens = new Array(tb.col_names.length);
   for (let i = 0; i < lens.length; i++) {
     let max = 0;
     max = Math.max(max, tb.col_names[i].length);
@@ -22,29 +27,40 @@ function outputTable(tb: Table): string {
     lens[i] = max;
   }
 
+  function printHR() {
+    res += '+'
+    lens.forEach(n => res += charRepeat('-', n+2) + '+');
+    res += '\r\n';
+  }
+
+  printHR();
+
+  res += '|'
   tb.col_names.forEach((col, idx) => {
     res += ' ';
-    res += Array(lens[idx] - col.length + 1).join(' ');
-    res += col + '  ';
+    res += charRepeat(' ', lens[idx] - col.length);
+    res += col + ' |';
   })
   res += '\r\n';
 
-  res += Array(res.length).join('-');
-  res += '\r\n';
-  
+  printHR();
+
   tb.data.forEach(row => {
+    res += '|'
     row.forEach((col, idx) => {
       res += ' ';
-      res += Array(lens[idx] - col.toString().length + 1).join(' ');
-      res += col.toString() + '  ';
+      res += charRepeat(' ', lens[idx] - col.toString().length);
+      res += col.toString() + ' |';
     })
     res += '\r\n';
   })
-  
+
+  printHR();
+
   return res;
 }
 
-export function interpret(tree: any, data: SystemData): string {
+function interpret(tree: any, data: SystemData): string {
   switch (tree.statement) {
     case 'CREATE DATABASE': {
       let db = new Database(tree.database);
@@ -71,6 +87,13 @@ export function interpret(tree: any, data: SystemData): string {
       let sel = tree.selects[0];
       let from_table = getTable(data, sel.from[0]);
 
+      for (let i = 1; i < sel.from.length; i++) {
+        from_table = tableJoin(from_table,
+                               getTable(data, sel.from[i]),
+                               sel.from[i].join_type.toLowerCase(),
+                               sel.from[i].on);
+      }
+
       // let tb = from_table.data;
       // let idx1 = from_table.col_names.indexOf(sel);
 
@@ -80,3 +103,5 @@ export function interpret(tree: any, data: SystemData): string {
       return 'action not implemented';
   }
 }
+
+export { outputTable, interpret };

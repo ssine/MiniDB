@@ -11,6 +11,7 @@ class Table {
     this.name = name;
     this.col_names = [];
     this.types = [];
+    this.data = [];
     if (col_defs) {
       col_defs.forEach(col => {
         this.col_names.push(col.column);
@@ -18,7 +19,6 @@ class Table {
       });
     }
     this.num_cols = this.col_names.length;
-    this.data = [];
   }
 
   load(data: any) {
@@ -33,6 +33,7 @@ class Table {
   }
 
   insert(values: any[][]) {
+    // insert from parse tree node, not raw data!
     values.forEach(row => {
       let cur = [];
       row.forEach(element => {
@@ -43,17 +44,14 @@ class Table {
   }
 
   insert_partial(cols: string[], values: any[][]) {
-    let mask = new Int32Array(this.num_cols);
-    for (let idx = 0; idx < this.col_names.length; idx++)
-      if (this.col_names[idx] in cols)
-        mask[idx] = 1;
+    let idxs = new Int32Array(cols.length);
+    for (let i = 0; i < cols.length; i++)
+      idxs[i] = this.col_names.indexOf(cols[i]);
 
     for (let row in values) {
       let cur = Array(...Array(this.num_cols)).map(_ => undefined);
-      let val_idx = 0;
-      for (let idx = 0; idx < mask.length; idx++)
-        if (mask[idx])
-          cur[idx] = values[row][val_idx++].data;
+      for (let i = 0; i < cols.length; i++)
+        cur[idxs[i]] = row[i];
       this.data.push(cur);
     }
   }
@@ -104,25 +102,24 @@ class SystemData {
   }
 
   load(path: string) {
-    fs.readFile(path, (err, data) => {
-      if (!err) {
-        console.log('data exists, loading...');
-        let dt = JSON.parse(data.toString());
-        // load basic info
-        for (let key in dt) {
-          if (typeof this[key] != "object")
-            this[key] = dt[key];
-        }
-
-        // create databases
-        for (let key in dt.dbs) {
-          this.dbs[key] = new Database(key);
-          this.dbs[key].load(dt.dbs[key]);
-        }
-      } else {
-        console.log('data not exists, will be saved after exit.');
+    try {
+      let data = fs.readFileSync(path).toString();
+      console.log('data exists, loading...');
+      let dt = JSON.parse(data.toString());
+      // load basic info
+      for (let key in dt) {
+        if (typeof this[key] != "object")
+          this[key] = dt[key];
       }
-    })
+
+      // create databases
+      for (let key in dt.dbs) {
+        this.dbs[key] = new Database(key);
+        this.dbs[key].load(dt.dbs[key]);
+      }
+    } catch(error) {
+      console.log('data not exists, will be saved after exit.');
+    }
   }
 }
 

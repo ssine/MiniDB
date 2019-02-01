@@ -4,11 +4,11 @@
 
 %%
 
-(['](\\.|[^']|\\\')*?['])+                  	return 'STRING'
+(['](\\.|[^']|\\\')*?['])+                      return 'STRING'
 
-"--"(.*?)($|\r\n|\r|\n)							/* skip -- comments */
+"--"(.*?)($|\r\n|\r|\n)                         /* skip -- comments */
 
-\s+   											/* skip whitespace */
+\s+                                             /* skip whitespace */
 
 'CREATE'                                        return 'CREATE'
 'TABLE'                                         return 'TABLE'
@@ -25,41 +25,41 @@
 'ON'                                            return 'ON'          
 'WHERE'                                         return 'WHERE'             
 
-[-]?(\d*[.])?\d+[eE]\d+							return 'NUMBER'
-[-]?(\d*[.])?\d+								return 'NUMBER'
+[-]?(\d*[.])?\d+[eE]\d+                         return 'NUMBER'
+[-]?(\d*[.])?\d+                                return 'NUMBER'
 
-'+'												return 'PLUS'
-'-' 											return 'MINUS'
-'*'												return 'STAR'
-'/'												return 'SLASH'
-'%'												return 'REM'
-'>>'											return 'RSHIFT'
-'<<'											return 'LSHIFT'
-'<>'											return 'NE'
-'!='											return 'NE'
-'>='											return 'GE'
-'>'												return 'GT'
-'<='											return 'LE'
-'<'												return 'LT'
-'='												return 'EQ'
-'&'												return 'BITAND'
-'|'												return 'BITOR'
+'+'                                             return 'PLUS'
+'-'                                             return 'MINUS'
+'*'                                             return 'STAR'
+'/'                                             return 'SLASH'
+'%'                                             return 'REM'
+'>>'                                            return 'RSHIFT'
+'<<'                                            return 'LSHIFT'
+'<>'                                            return 'NE'
+'!='                                            return 'NE'
+'>='                                            return 'GE'
+'>'                                             return 'GT'
+'<='                                            return 'LE'
+'<'                                             return 'LT'
+'='                                             return 'EQ'
+'&'                                             return 'BITAND'
+'|'                                             return 'BITOR'
 
-'('												return 'LPAR'
-')'												return 'RPAR'
+'('                                             return 'LPAR'
+')'                                             return 'RPAR'
 
-'.'												return 'DOT'
-','												return 'COMMA'
-':'												return 'COLON'
-';'												return 'SEMICOLON'
-'$'												return 'DOLLAR'
-'?'												return 'QUESTION'
-'^'												return 'CARET'
+'.'                                             return 'DOT'
+','                                             return 'COMMA'
+':'                                             return 'COLON'
+';'                                             return 'SEMICOLON'
+'$'                                             return 'DOLLAR'
+'?'                                             return 'QUESTION'
+'^'                                             return 'CARET'
 
-[a-zA-Z_][a-zA-Z_0-9]*                       	return 'LITERAL'
+[a-zA-Z_][a-zA-Z_0-9]*                          return 'LITERAL'
 
-<<EOF>>               							return 'EOF'
-.												return 'INVALID'
+<<EOF>>                                         return 'EOF'
+.                                               return 'INVALID'
 
 /lex
 
@@ -147,9 +147,9 @@ column_def
     ;
 
 type_name
-	: name
-		{ $$ = {type: $1.toUpperCase()}; }
-	;
+    : name
+        { $$ = {type: $1.toUpperCase()}; }
+    ;
 
 create_database_stmt
     : CREATE DATABASE name
@@ -157,179 +157,177 @@ create_database_stmt
     ;
 
 insert_stmt
-	: INSERT INTO database_table_name columns_par insert_values
-		{
-			$$ = {statement: 'INSERT'};
-			yy.extend($$, $3, $4, $5);
-		}
-	;
+    : INSERT INTO database_table_name columns_par insert_values
+        {
+            $$ = {statement: 'INSERT'};
+            yy.extend($$, $3, $4, $5);
+        }
+    ;
 
 columns_par
-	:
-		{ $$ = undefined; }
-	| LPAR columns RPAR
-		{ $$ = {columns: $2}}
-	;
+    :
+        { $$ = undefined; }
+    | LPAR columns RPAR
+        { $$ = {columns: $2}}
+    ;
 
 columns
-	: columns COMMA name
-		{ $$ = $1; $$.push($3); }
-	| name
-		{ $$ = [$1]; }
-	;
+    : columns COMMA name
+        { $$ = $1; $$.push($3); }
+    | name
+        { $$ = [$1]; }
+    ;
 
 insert_values
-	: VALUES values
-		{ $$ = {values: $2}; }
+    : VALUES values
+        { $$ = {values: $2}; }
     ;
 
 values
-	: values COMMA value
-		{ $$ = $1; $$.push($3); }
-	| value
-		{ $$ = [$1]; }
-	;
+    : values COMMA value
+        { $$ = $1; $$.push($3); }
+    | value
+        { $$ = [$1]; }
+    ;
 
 value
-	: LPAR subvalues RPAR
-		{ $$ = $2; }
-	;
+    : LPAR subvalues RPAR
+        { $$ = $2; }
+    ;
 
 subvalues
-	: subvalues COMMA expr
-		{ $$ = $1; $$.push($3); }
-	| expr
-		{ $$ = [$1]; }
-	;
+    : subvalues COMMA expr
+        { $$ = $1; $$.push($3); }
+    | expr
+        { $$ = [$1]; }
+    ;
 
 expr
-	: literal_value
-		{ $$ = $1; }
-	| NULL
-		{ $$ = {type:'NULL'}; }
-	| name
-		{ $$ = {column: $1}; }
-	| name DOT name
-		{ $$ = {table: $1, column: $3}; }
-	| name DOT name DOT name
-		{ $$ = {database: $1, table: $3, column: $5}; }
+    : literal_value
+        { $$ = $1; }
+    | name
+        { $$ = {column: $1}; }
+    | name DOT name
+        { $$ = {table: $1, column: $3}; }
+    | name DOT name DOT name
+        { $$ = {database: $1, table: $3, column: $5}; }
 
-	| expr EQ expr
-		{ $$ = {op: 'EQ', left: $1, right: $3}; }
-	| expr NE expr
-		{ $$ = {op: 'NE', left: $1, right: $3}; }
-	| expr GT expr
-		{ $$ = {op: 'GT', left: $1, right: $3}; }
-	| expr GE expr
-		{ $$ = {op: 'GE', left: $1, right: $3}; }
-	| expr LT expr
-		{ $$ = {op: 'LT', left: $1, right: $3}; }
-	| expr LE expr
-		{ $$ = {op: 'LE', left: $1, right: $3}; }
+    | expr EQ expr
+        { $$ = {op: 'EQ', left: $1, right: $3}; }
+    | expr NE expr
+        { $$ = {op: 'NE', left: $1, right: $3}; }
+    | expr GT expr
+        { $$ = {op: 'GT', left: $1, right: $3}; }
+    | expr GE expr
+        { $$ = {op: 'GE', left: $1, right: $3}; }
+    | expr LT expr
+        { $$ = {op: 'LT', left: $1, right: $3}; }
+    | expr LE expr
+        { $$ = {op: 'LE', left: $1, right: $3}; }
 
-	| expr AND expr
-		{ $$ = {op: 'AND', left: $1, right: $3}; }
-	| expr OR expr
-		{ $$ = {op: 'OR', left: $1, right: $3}; }
+    | expr AND expr
+        { $$ = {op: 'AND', left: $1, right: $3}; }
+    | expr OR expr
+        { $$ = {op: 'OR', left: $1, right: $3}; }
     ;
 
 literal_value
-	: NUMBER
-		{ $$ = {type:'number', data: parseFloat($1)}; }
-	| STRING
-		{ $$ = {type:'string', data: $1.substring(1, $1.length - 1)}}
-	;
+    : NUMBER
+        { $$ = {type:'number', data: parseFloat($1)}; }
+    | STRING
+        { $$ = {type:'string', data: $1.substring(1, $1.length - 1)}}
+    ;
 
 select_stmt
-	: compound_selects
-		{
-			$$ = {statement: 'SELECT', selects: $1};
-		}
-	;
+    : compound_selects
+        {
+            $$ = {statement: 'SELECT', selects: $1};
+        }
+    ;
 
 compound_selects
-	: select
-		{ $$ = [$1]; }
-	;
+    : select
+        { $$ = [$1]; }
+    ;
 
 select
-	: SELECT result_columns from where
-		{
-			$$ = {};
-			yy.extend($$, $2, $3, $4);
-		}
-	;
+    : SELECT result_columns from where
+        {
+            $$ = {};
+            yy.extend($$, $2, $3, $4);
+        }
+    ;
 
 result_columns
-	: result_columns COMMA result_column
-		{ $$ = $1; $$.push($3); }
-	| result_column
-		{ $$ = [$1]; }
-	;
+    : result_columns COMMA result_column
+        { $$ = $1; $$.push($3); }
+    | result_column
+        { $$ = [$1]; }
+    ;
 
 result_column
-	: STAR
-		{ $$ = {star: true}; }
-	| name DOT STAR
-		{ $$ = {table: $1, star: true}; }
-	| expr alias
-		{ $$ = {expr: $1}; yy.extend($$, $2);  }
-	;
+    : STAR
+        { $$ = {star: true}; }
+    | name DOT STAR
+        { $$ = {table: $1, star: true}; }
+    | expr alias
+        { $$ = {expr: $1}; yy.extend($$, $2);  }
+    ;
 
 alias
-	:
-		{ $$ = undefined;}
-	| name
-		{ $$ = {alias: $1};}
-	| AS name
-		{ $$ = {alias: $2};}
-	;
+    :
+        { $$ = undefined;}
+    | name
+        { $$ = {alias: $1};}
+    | AS name
+        { $$ = {alias: $2};}
+    ;
 
 from
-	: FROM join_clause
-		{ $$ = {from: $2}; }
-	;
+    : FROM join_clause
+        { $$ = {from: $2}; }
+    ;
 
 join_clause
-	: table_or_subquery
-		{ $$ = [$1]; }
-	| join_clause join_operator table_or_subquery join_constraint
-		{
-			yy.extend($3, $2, $4);
-			$$.push($3);
-		}
-	;
+    : table_or_subquery
+        { $$ = [$1]; }
+    | join_clause join_operator table_or_subquery join_constraint
+        {
+            yy.extend($3, $2, $4);
+            $$.push($3);
+        }
+    ;
 
 table_or_subquery
-	: database_table_name alias
-		{ $$ = $1; yy.extend($$, $2); }
-	;
+    : database_table_name alias
+        { $$ = $1; yy.extend($$, $2); }
+    ;
 
 join_operator
-	: COMMA
-		{ $$ = {join_type: 'CROSS'}; }
-	| join_type JOIN
-		{ $$ = $1; }
-	;
+    : COMMA
+        { $$ = {join_type: 'CROSS'}; }
+    | join_type JOIN
+        { $$ = $1; }
+    ;
 
 join_type
-	:
-		{ $$ = {join_type: 'INNER'}; }
-	| INNER
-		{ $$ = {join_type: 'INNER'}; }
-	| CROSS
-		{ $$ = {join_type: 'CROSS'}; }
-	;
+    :
+        { $$ = {join_type: 'INNER'}; }
+    | INNER
+        { $$ = {join_type: 'INNER'}; }
+    | CROSS
+        { $$ = {join_type: 'CROSS'}; }
+    ;
 
 join_constraint
-	:
-		{ $$ = undefined; } 
-	| ON expr
-		{ $$ = {on: $2}; }
-	;
+    :
+        { $$ = undefined; } 
+    | ON expr
+        { $$ = {on: $2}; }
+    ;
 
 where
-	: WHERE expr
-		{ $$ = {where: $2}; }
-	|
-	;
+    : WHERE expr
+        { $$ = {where: $2}; }
+    |
+    ;
