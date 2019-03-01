@@ -264,8 +264,8 @@ select
 result_columns
     : column_list
         { $$ = {star: false, result_columns: $1}; }
-	| STAR
-		{ $$ = {star: true}; }
+    | STAR
+        { $$ = {star: true}; }
     ;
 
 column_list

@@ -55,6 +55,7 @@ class Term {
           let str = this.input.trimRight();
           if (str[str.length - 1] != ';') {
             this.state = 'multi_line';
+            this.input += ' ';
           } else {
             console.log(this.input);
             let res: string;
