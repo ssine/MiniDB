@@ -31,7 +31,7 @@ term.listener = (input: string): string => {
   }
   
   let trees = parser.parse(input);
-  let res: string = '';
+  let res = '';
   trees.forEach(tree => {
     console.log(tree);
     switch (tree.statement) {

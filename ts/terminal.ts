@@ -16,7 +16,7 @@ class Term {
         this.term.write('minidb> ');
         break;
       case 'multi_line':
-        this.term.write('......> ');
+        this.term.write('   ...> ');
         break;
     }
   }
