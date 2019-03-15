@@ -53,7 +53,7 @@ class Term {
           this.term.writeln('');
 
           let str = this.input.trimRight();
-          if (str[str.length - 1] != ';') {
+          if (str[0] != '.' && str[str.length - 1] != ';') {
             this.state = 'multi_line';
             this.input += ' ';
           } else {
@@ -64,7 +64,7 @@ class Term {
               this.term.writeln(res.trim());
             } catch (error) {
               console.log(error);
-              this.term.writeln('parse error');
+              this.term.writeln('uncaught error: ' + error);
             }
             this.history.push(this.input);
             this.input = ''

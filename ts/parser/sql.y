@@ -13,7 +13,11 @@
 'CREATE'                                        return 'CREATE'
 'TABLE'                                         return 'TABLE'
 'DATABASE'                                      return 'DATABASE'
+'DELETE'                                        return 'DELETE'
 'INSERT'                                        return 'INSERT'
+'UPDATE'                                        return 'UPDATE'
+'SET'                                           return 'SET'
+'DROP'                                          return 'DROP'
 'INTO'                                          return 'INTO'
 'VALUES'                                        return 'VALUES'
 'SELECT'                                        return 'SELECT'
@@ -109,9 +113,11 @@ sql_stmt
 
 sql_stmt
     : create_table_stmt
-    | create_database_stmt
+    | drop_table_stmt
     | insert_stmt
     | select_stmt
+    | delete_stmt
+    | update_stmt
     ;
 
 create_table_stmt
@@ -154,9 +160,12 @@ type_name
         { $$ = {type: $1.toUpperCase()}; }
     ;
 
-create_database_stmt
-    : CREATE DATABASE name
-        { $$ = {statement: 'CREATE DATABASE', database: $3 }}
+drop_table_stmt
+    : DROP TABLE database_table_name
+        { 
+            $$ = {statement: 'DROP TABLE'}; 
+            yy.extend($$,$3);
+        }
     ;
 
 insert_stmt
@@ -331,4 +340,34 @@ where
     : WHERE expr
         { $$ = {where: $2}; }
     |
+    ;
+
+delete_stmt
+    : DELETE FROM database_table_name where
+        { 
+            $$ = {statement:'DELETE'};
+            yy.extend($$,$3);
+            yy.extend($$,$4);
+        }
+    ;
+
+update_stmt
+    : UPDATE database_table_name SET column_expr_list where
+        { 
+            $$ = {statement: 'UPDATE', set: $4};
+            yy.extend($$,$2);
+            yy.extend($$,$5);
+        }
+    ;
+
+column_expr_list
+    : column_expr_list COMMA column_expr
+        { $$ = $1; $$.push($3); }
+    | column_expr
+        { $$ = [$1]; }
+    ;
+
+column_expr
+    : name EQ expr
+        { $$ = {column:$1, expr: $3}; }
     ;
