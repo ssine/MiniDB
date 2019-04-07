@@ -16,7 +16,7 @@ function load_data(path: string): SystemData {
 
 function save_data(path: string, data: SystemData): boolean {
   fs.writeFileSync(path, JSON.stringify(data));
-  console.log('Data saved file.');
+  console.log('Data file saved.');
   return true;
 }
 

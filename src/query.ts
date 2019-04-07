@@ -153,7 +153,7 @@ function scanner_to_string(sc: Scanner): string {
     res += ' ';
     res += char_repeat(' ', lens[idx] - col.length);
     res += col + ' |';
-  })
+  });
   res += '\r\n';
 
   print_hr();

@@ -7,7 +7,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "start": "npm run build && electron ./js/main.js",
-    "cc": "jison ./ts/parser/sql.y -o ./ts/parser/parser.js & copy .\\ts\\parser\\parser.js .\\js\\parser\\parser.js /Y",
+    "cc": "jison ./src/parser/sql.y -o ./src/parser/parser.js & copy .\\src\\parser\\parser.js .\\js\\parser\\parser.js /Y",
     "dist": "xcopy .\\js\\*.js .\\dist\\ /Y && xcopy .\\js\\parser\\*.js .\\dist\\parser\\ /Y && xcopy .\\node_modules\\xterm .\\dist\\node_modules\\xterm\\ /Y"
   },
   "author": "sine",

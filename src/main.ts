@@ -1,9 +1,59 @@
-// This file is required by the index.html file and will
-// be executed in the renderer process for that window.
-// All of the Node.js APIs are available in this process.
+import { app, BrowserWindow, ipcMain } from "electron";
+import * as path from "path";
+
+let mainWindow: Electron.BrowserWindow;
+
+function createWindow() {
+  // Create the browser window.
+  mainWindow = new BrowserWindow({
+    height: 400,
+    width: 800,
+    webPreferences: {
+      nodeIntegration: true
+    }
+  });
+
+  // and load the index.html of the app.
+  mainWindow.loadFile(path.join(__dirname, "../index.html"));
+
+  // Open the DevTools.
+  mainWindow.webContents.openDevTools();
+
+  // Emitted when the window is closed.
+  mainWindow.on("closed", () => {
+    // Dereference the window object, usually you would store windows
+    // in an array if your app supports multi windows, this is the time
+    // when you should delete the corresponding element.
+    mainWindow = null;
+  });
+}
+
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
+app.on("ready", createWindow);
+
+// Quit when all windows are closed.
+app.on("window-all-closed", () => {
+  // On OS X it is common for applications and their menu bar
+  // to stay active until the user quits explicitly with Cmd + Q
+  if (process.platform !== "darwin") {
+    app.quit();
+  }
+});
+
+app.on("activate", () => {
+  // On OS X it"s common to re-create a window in the app when the
+  // dock icon is clicked and there are no other windows open.
+  if (mainWindow === null) {
+    createWindow();
+  }
+});
+
+// In this file you can include the rest of your app"s specific main process
+// code. You can also put them in separate files and require them here.
+
 import { parser, Trees } from './parser'
-import { Term } from './terminal'
-import { remote } from 'electron'
 import { SystemData } from './data'
 import * as fs from 'fs'
 import { load_data, save_data } from './utls'
@@ -28,9 +78,11 @@ let data_path = './data.json';
 
 let sys_data: SystemData = load_data(data_path);
 
-let term = new Term(document.getElementById('terminal-container'));
+ipcMain.on('command-line', (event, arg) => {
+  event.returnValue = process_input(arg);
+});
 
-term.listener = (input: string): string => {
+function process_input(input: string): string {
 
   let timer = new Date().valueOf();
 
@@ -45,7 +97,7 @@ term.listener = (input: string): string => {
     switch (cmd) {
       case 'exit':
         save_data(data_path, sys_data);
-        remote.getCurrentWindow().close();
+        app.quit();
         return '';
       case 'file':
         let path = input.substr(4).trim();
