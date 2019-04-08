@@ -14,6 +14,7 @@ class Database {
 class SystemData {
   dbs: {[db_name: string]: Database};
   cur_db: string;
+  show_plan: boolean;
 }
 
 export { Table, Database, SystemData };

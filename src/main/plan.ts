@@ -37,7 +37,7 @@
  */
 
 import { Table } from './data';
-import { Expression, ColumnName, Literal } from './parser'
+import { Expression, ColumnName, Literal } from '../parser'
 
 class table_insert {
   table: Table;
@@ -122,6 +122,7 @@ class table_update {
 interface Scanner {
   get_next: () => any[] | false;
   get_col_id: () => string[];
+  get_info: () => plan_info;
 }
 
 class table_scan implements Scanner {
@@ -150,6 +151,13 @@ class table_scan implements Scanner {
 
   get_col_id(): string[] {
     return this.table.col_id;
+  }
+
+  get_info(): plan_info {
+    return {
+      name: 'table_scan: ' + this.table.name,
+      children: []
+    }
   }
 }
 
@@ -200,6 +208,13 @@ class nested_loop_join implements Scanner {
   get_col_id() {
     return this.col_id;
   }
+
+  get_info(): plan_info {
+    return {
+      name: 'nested_loop_join',
+      children: [this.sc1.get_info(), this.sc2.get_info()]
+    }
+  }
 }
 
 class table_filter implements Scanner {
@@ -229,6 +244,13 @@ class table_filter implements Scanner {
   get_col_id(): string[] {
     return this.col_id;
   }
+
+  get_info(): plan_info {
+    return {
+      name: 'table_filter',
+      children: [this.sc.get_info()]
+    }
+  }
 }
 
 class table_project implements Scanner {
@@ -244,9 +266,9 @@ class table_project implements Scanner {
     this.idx_mask = new Int32Array(old_col_id.length);
     cols.forEach(col => this.idx_mask[old_col_id.indexOf(col)] = 1);
 
-    console.log('new: ' + this.col_id.toString());
-    console.log('old: ' + old_col_id.toString());
-    console.log('mask: ' + this.idx_mask.toString());
+    // console.log('new: ' + this.col_id.toString());
+    // console.log('old: ' + old_col_id.toString());
+    // console.log('mask: ' + this.idx_mask.toString());
   }
 
   get_next(): any[] | false {
@@ -266,8 +288,19 @@ class table_project implements Scanner {
   get_col_id(): string[] {
     return this.col_id;
   }
+
+  get_info(): plan_info {
+    return {
+      name: 'table_project',
+      children: [this.sc.get_info()]
+    }
+  }
 }
 
+class plan_info {
+  name: string;
+  children: plan_info[];
+}
 
 export { 
   table_delete,
@@ -277,16 +310,17 @@ export {
   table_update,
   nested_loop_join,
   table_filter,
-  table_project
+  table_project,
+  plan_info
 }
 
 function eval_valu_expr(row: any[], col_id: string[], tree: ColumnName|Literal): (number | string | Date) {
   if((<any>tree).op) throw 'not a value expression!';
   if ((<ColumnName>tree).column) {
-    console.log('col value: ' + row[col_id.indexOf((<ColumnName>tree).column)]);
+    // console.log('col value: ' + row[col_id.indexOf((<ColumnName>tree).column)]);
     return row[col_id.indexOf((<ColumnName>tree).column)];
   } else if((<Literal>tree).data) {
-    console.log('literal value: ' + (<Literal>tree).data);
+    // console.log('literal value: ' + (<Literal>tree).data);
     return (<Literal>tree).data;
   }
   throw 'not a valid value expression';
@@ -295,9 +329,9 @@ function eval_valu_expr(row: any[], col_id: string[], tree: ColumnName|Literal):
 function eval_cond_expr(row: any[], col_id: string[], tree: Expression): boolean {
   if (!tree.op) throw 'not a conditional expression!';
 
-  console.log('evaluating ' + tree.op + '.');
-  console.log('row: ' + row.toString());
-  console.log('col: ' + col_id.toString());
+  // console.log('evaluating ' + tree.op + '.');
+  // console.log('row: ' + row.toString());
+  // console.log('col: ' + col_id.toString());
 
   switch (tree.op) {
     case 'AND':

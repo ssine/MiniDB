@@ -45,6 +45,12 @@ function show_table(data: SystemData): string {
   }
 }
 
+function set_plan_drawing(data: SystemData, state: boolean): string {
+  data.show_plan = state;
+  if (state) return 'plan drawing on.'
+  else return 'plan drawing off.'
+}
+
 /************ Data Definition Language ************/
 
 function create_table(data: SystemData, tree: any): string {
@@ -83,6 +89,7 @@ export {
   use_database,
   show_database,
   show_table,
+  set_plan_drawing,
   create_table,
   drop_table
 };

@@ -8,7 +8,7 @@ import {
   Expression,
   ColumnName,
   Literal
-} from './parser'
+} from '../parser'
 import { Table, Database, SystemData } from "./data";
 import {
   table_insert,
@@ -20,6 +20,7 @@ import {
   table_filter,
   table_project
 } from './plan'
+import { plot_plan } from './utls'
 
 function get_table(data: SystemData, clause: TableName): Table {
   let db = clause.database ? clause.database : data.cur_db;
@@ -74,27 +75,29 @@ function ql_select(data: SystemData, tree: Select): string {
 
   let tb = get_table(data, sel.from[0]);
 
-  console.log('first table: ' + tb.name);
+  // console.log('first table: ' + tb.name);
   let iter: Scanner = new table_scan(tb);
   for (let i = 1; i < sel.from.length; i++) {
     let right_tb = new table_scan(get_table(data, sel.from[i]));
-    console.log('next table: ' + get_table(data, sel.from[i]).name + ', looping...');
+    // console.log('next table: ' + get_table(data, sel.from[i]).name + ', looping...');
     iter = new nested_loop_join(
       iter, 
       right_tb, 
       sel.from[i].join_type.toLowerCase(), 
       sel.from[i].on
     );
-    console.log('loop finished.');
+    // console.log('loop finished.');
   }
   
   iter = new table_filter(iter, sel.where);
-  console.log('filter constructed.');
+  // console.log('filter constructed.');
   
   if (!sel.star) {
     iter = new table_project(iter, sel.result_columns);
-    console.log('projector constructed.');
+    // console.log('projector constructed.');
   }
+
+  if (data.show_plan) plot_plan(iter.get_info());
 
   return scanner_to_string(iter);
 }
@@ -123,10 +126,10 @@ function scanner_to_string(sc: Scanner): string {
   // get all the data
   let rows = [];
   let row: any;
-  console.log('retriving rows...');
+  // console.log('retriving rows...');
   while (row = sc.get_next())
     rows.push(row);
-  console.log('rows: ', rows.toString());
+  // console.log('rows: ', rows.toString());
   
   let res = '';
 
@@ -175,12 +178,12 @@ function scanner_to_string(sc: Scanner): string {
 
 
 function col_check_complete(col_id: string[], expr: Expression): boolean {
-  console.log('col_check_complete');
+  // console.log('col_check_complete');
   function check_col(col: ColumnName|Literal): boolean {
     if ((<Literal>col).data) return true;
     col = col as ColumnName;
     if (!col.table) {
-      console.log(col.column + ', no table name specificed...')
+      // console.log(col.column + ', no table name specificed...')
       for (let i = col_id.length-1; i >= 0; i--) {
         if (col.column === col_id[i].split('.')[1]) {
           col.column = col_id[i];
@@ -189,22 +192,22 @@ function col_check_complete(col_id: string[], expr: Expression): boolean {
       }
       return false;
     } else {
-      console.log('with table: ' + col.table + '.' + col.column + ', idx: ' + col_id.indexOf(col.table + '.' + col.column));
-      console.log('col_id: ' + col_id.toString());
+      // console.log('with table: ' + col.table + '.' + col.column + ', idx: ' + col_id.indexOf(col.table + '.' + col.column));
+      // console.log('col_id: ' + col_id.toString());
       col.column = col.table + '.' + col.column;
       return col_id.indexOf(col.column) != -1;
     }
   }
 
-  console.log('col_check_complete1');
+  // console.log('col_check_complete1');
 
   if (!expr)
     return true;
-  console.log('col_check_complete2');
+  // console.log('col_check_complete2');
   
   if (['AND', 'OR'].indexOf(expr.op) != -1)
     return col_check_complete(col_id, <Expression>expr.left) && col_check_complete(col_id, <Expression>expr.right);
-  console.log(expr.op);  
+  // console.log(expr.op);  
   if (['EQ', 'NE', 'GT', 'GE', 'LT', 'LE'].indexOf(expr.op) != -1) {
     return check_col(<ColumnName>expr.left) && check_col(<ColumnName>expr.right);
   }
@@ -248,14 +251,14 @@ function ql_check(data: SystemData, tree: Tree): [boolean, string] {
         }
       }
       if (sel.result_columns) {
-        console.log('result columns semantic checking...');
+        // console.log('result columns semantic checking...');
         for (let i = 0; i < sel.result_columns.length; i++) {
           let cur = sel.result_columns[i];
           if (cur.indexOf('.') == -1) {
             let find: boolean = false;
             for (let j = col.length-1; j >= 0; j--) {
               if (cur === col[j].split('.')[1]) {
-                console.log(cur + ' changed to ' + col[j]);
+                // console.log(cur + ' changed to ' + col[j]);
                 cur = col[j];
                 sel.result_columns[i] = cur;
                 find = true;

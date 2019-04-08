@@ -4,11 +4,11 @@
   "description": "a core implementation of dbms",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc & xcopy .\\src\\pages .\\js\\pages\\ /e /Y",
     "watch": "tsc -w",
-    "start": "npm run build && electron ./js/main.js",
+    "start": "npm run build && electron ./js/main/main.js",
     "cc": "jison ./src/parser/sql.y -o ./src/parser/parser.js & xcopy .\\src\\parser\\parser.js .\\js\\parser\\ /Y",
-    "dist": "xcopy .\\js\\*.js .\\dist\\ /Y && xcopy .\\js\\parser\\*.js .\\dist\\parser\\ /Y && xcopy .\\node_modules\\xterm .\\dist\\node_modules\\xterm\\ /Y"
+    "dist": "xcopy .\\js\\*.js .\\dist\\ /Y & xcopy .\\js\\parser\\*.js .\\dist\\parser\\ /Y & xcopy .\\node_modules\\xterm .\\dist\\node_modules\\xterm\\ /Y"
   },
   "author": "sine",
   "license": "ISC",

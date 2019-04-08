@@ -14,10 +14,10 @@ function createWindow() {
   });
 
   // and load the index.html of the app.
-  mainWindow.loadFile(path.join(__dirname, "../index.html"));
+  mainWindow.loadFile(path.join(__dirname, "../pages/index.html"));
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 
   // Emitted when the window is closed.
   mainWindow.on("closed", () => {
@@ -53,7 +53,7 @@ app.on("activate", () => {
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
 
-import { parser, Trees } from './parser'
+import { parser, Trees } from '../parser'
 import { SystemData } from './data'
 import * as fs from 'fs'
 import { load_data, save_data } from './utls'
@@ -63,6 +63,7 @@ import {
   use_database,
   show_database,
   show_table,
+  set_plan_drawing,
   create_table,
   drop_table
 } from './manager'
@@ -100,9 +101,14 @@ function process_input(input: string): string {
         app.quit();
         return '';
       case 'file':
-        let path = input.substr(4).trim();
-        input = fs.readFileSync(path).toString();
-        res = run_sql(input);
+        let filename = input.substr(4).trim();
+        try {
+          // console.log(path.join(__dirname, filename));
+          input = fs.readFileSync(path.join(__dirname, filename)).toString();
+          res = run_sql(input);
+        } catch (err) {
+          res = 'file not exists.';
+        }
         break;
       case 'createdb':
         res = create_database(sys_data, input.split(' ')[1]);
@@ -118,6 +124,12 @@ function process_input(input: string): string {
         break;
       case 'showtb':
         res = show_table(sys_data);
+        break;
+      case 'planon':
+        res = set_plan_drawing(sys_data, true);
+        break;
+      case 'planoff':
+        res = set_plan_drawing(sys_data, false);
         break;
     }
   } else {
@@ -146,7 +158,7 @@ function run_sql(input: string): string {
       res += check_err + '\r\nsemantic check failed!\r\n';
       return;
     }
-    console.log(tree);
+    // console.log(tree);
     switch (tree.statement) {
       case 'CREATE TABLE':
         res += create_table(sys_data, tree);
