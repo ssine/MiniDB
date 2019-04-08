@@ -32,6 +32,8 @@ npm start
 .usedb [database name]       | 使用数据库
 .showdb                      | 显示所有数据库
 .showtb                      | 显示当前数据库所有表
+.planon                      | 显示 SELECT 语句执行计划
+.planoff                     | 不显示 SELECT 语句执行计划
 ```
 
 所有 SQL 语句输入以 `;` 结尾，目前支持的 SQL 语句：
