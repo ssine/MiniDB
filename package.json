@@ -17,5 +17,9 @@
     "shx": "^0.3.2",
     "typescript": "^3.2.4",
     "xterm": "^3.10.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:ssine/MiniDB.git"
   }
 }
