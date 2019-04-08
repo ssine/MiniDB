@@ -244,6 +244,7 @@ function ql_check(data: SystemData, tree: Tree): [boolean, string] {
       let col: string[] = [];
       for (let i = 0; i < sel.from.length; i++) {
         let cur = sel.from[i];
+        if (!get_table(data, cur)) return [false, 'table not exist.']
         col = col.concat(get_table(data, cur).col_id);
         if (cur.on) {
           if (!col_check_complete(col, cur.on))
