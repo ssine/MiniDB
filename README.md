@@ -14,7 +14,7 @@ git clone https://github.com/ssine/MiniDB.git
 cd MiniDB
 # Install dependencies
 npm install
-# Generate SQL Compiler
+# Generate SQL Parser
 npm run cc
 # Run the app
 npm start
