@@ -39,7 +39,7 @@ npm start
 所有 SQL 语句输入以 `;` 结尾，目前支持的 SQL 语句：
 
 ```sql
-CREATE TABLE
+CREATE TABLE [table name]
 DROP TABLE
 SELECT
 INSERT
@@ -49,5 +49,10 @@ UPDATE
 
 ## TODO
 
+* 命令行历史记录功能？
 * 建立索引
 * 更多的执行计划
+
+## Showcase
+
+

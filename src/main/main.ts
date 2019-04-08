@@ -148,7 +148,13 @@ function run_sql(input: string): string {
   if (sys_data.cur_db === '')
     return 'not using any database!';
 
-  let trees: Trees = parser.parse(input);
+  let trees: Trees;
+
+  try {
+    trees = parser.parse(input);
+  } catch (err) {
+    return 'parse error.';
+  }
 
   let res = '';
   let check_res: boolean, check_err: string;
