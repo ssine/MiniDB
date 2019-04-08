@@ -1,9 +1,9 @@
 # MiniDB
 
 * [概览](https://ssine.cc/2019-1-24/dbms-implementation-1)
-* [项目结构](https://ssine.cc/2019-1-24/dbms-implementation-2)
-* [SQL 解析与执行](https://ssine.cc/2019-1-24/dbms-implementation-3)
-* [持久化](https://ssine.cc/2019-1-24/dbms-implementation-4)
+* [项目结构](https://ssine.cc/2019-1-28/dbms-implementation-2)
+* [SQL 解析与执行](https://ssine.cc/2019-1-30/dbms-implementation-3)
+* [持久化](https://ssine.cc/2019-1-31/dbms-implementation-4)
 
 ## Setup
 
@@ -49,7 +49,5 @@ UPDATE
 
 ## TODO
 
-* 显示执行计划
-* npm 脚本只支持 windows
 * 建立索引
 * 更多的执行计划
