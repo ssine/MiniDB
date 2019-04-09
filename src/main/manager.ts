@@ -1,7 +1,14 @@
+/**
+ * @file Provide functions that manages the system and executes DDL.
+ */
 import { Database, SystemData, Table } from './data'
+import { Create } from '../parser'
 
 /************ System Commands ************/
 
+/**
+ * Create a new database in the system with given database name.
+ */
 function create_database(data: SystemData, name: string): string {
   let db = new Database();
   db.name = name;
@@ -10,6 +17,9 @@ function create_database(data: SystemData, name: string): string {
   return 'new database created.';
 }
 
+/**
+ * Drop a database in the system with given name.
+ */
 function drop_database(data: SystemData, name: string): string {
   delete data.dbs[name];
   if (data.cur_db == name) 
@@ -17,6 +27,9 @@ function drop_database(data: SystemData, name: string): string {
   return 'database destroyed.';
 }
 
+/**
+ * Set active database (default database when SQL is executed).
+ */
 function use_database(data: SystemData, name: string): string {
   if (data.dbs[name]) {
     data.cur_db = name;
@@ -26,6 +39,10 @@ function use_database(data: SystemData, name: string): string {
   }
 }
 
+/**
+ * Show all the databases in the system.
+ * The active one is marked with '*'.
+ */
 function show_database(data: SystemData): string {
   let dbs = Object.keys(data.dbs);
   let cur = data.cur_db;
@@ -37,6 +54,9 @@ function show_database(data: SystemData): string {
   return res;
 }
 
+/**
+ * Show all the tables in the active database.
+ */
 function show_table(data: SystemData): string {
   if (data.cur_db) {
     return Object.keys(data.dbs[data.cur_db].tables).join('\r\n');
@@ -45,6 +65,9 @@ function show_table(data: SystemData): string {
   }
 }
 
+/**
+ * Draw physics plans when a SELECT statement is executed.
+ */
 function set_plan_drawing(data: SystemData, state: boolean): string {
   data.show_plan = state;
   if (state) return 'plan drawing on.'
@@ -53,7 +76,10 @@ function set_plan_drawing(data: SystemData, state: boolean): string {
 
 /************ Data Definition Language ************/
 
-function create_table(data: SystemData, tree: any): string {
+/**
+ * Create a table in active database with given SQL parse tree.
+ */
+function create_table(data: SystemData, tree: Create): string {
   let dbn = data.cur_db;
   if (tree.database) dbn = tree.database;
 
@@ -77,6 +103,9 @@ function create_table(data: SystemData, tree: any): string {
   return 'new table created.';
 }
 
+/**
+ * Drop a table in active database with given SQL parse tree.
+ */
 function drop_table(data: SystemData, tree: any): string {
   delete data.dbs[data.cur_db].tables[tree.table];
   return 'table destroyed.';

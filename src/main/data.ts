@@ -1,3 +1,7 @@
+/**
+ * @file Data specifications of table, database and the whole system.
+ */
+
 class Table {
   name: string;
   col_name: string[];
