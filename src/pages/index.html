@@ -129,16 +129,35 @@ function setupHterm() {
 
     let bound = {left: 0, right: getScreenWidth()};
     let input = '';
+    let history = [], his_pos = 0;
+    function get_prev_his() {
+      if (his_pos > 0) {
+        his_pos--;
+        return history[his_pos];
+      } else return '';
+    }
+    function get_next_his() {
+      if (his_pos < history.length) {
+        his_pos++;
+        return history[his_pos] || '';
+      } return '';
+    }
+    function push_his(input) {
+      history.push(input);
+      his_pos = history.length;
+    }
 
     io.onVTKeystroke = (string) => {
       // console.log(getScreenHeight(), getCursorPosition().row);
       switch (string) {
         case '\r':
           input += getLineInput() + ' ';
+          push_his(getLineInput());
           io.println('');
           let text = input.trim();
           // console.log(text);
           if (text[0] == '.' || text[text.length-1] == ';') {
+            io.print('\x1b[38:2:248:237:187m')
             io.print(sendMessage(text));
             input = '';
             io.println('');
@@ -148,7 +167,16 @@ function setupHterm() {
           }
           break;
         case '\u001b[A': // up arrow
+          io.print('\x1b[2K\x1b[0G');
+          if (input == '') printPrompt();
+          else printMultiPrompt();
+          io.print(get_prev_his());
+          break;
         case '\u001b[B': // down arrow
+          io.print('\x1b[2K\x1b[0G');
+          if (input == '') printPrompt();
+          else printMultiPrompt();
+          io.print(get_next_his());
           break;
         case '\u001b[D': // left arrow
           if (getCursorPosition().col > bound.left)
