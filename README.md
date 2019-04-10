@@ -74,15 +74,15 @@ WHERE expression;
 
 系统指令，数据库管理：
 
-<img src="https://sine-img-bed.oss-cn-beijing.aliyuncs.com/projects/minidb/syscmd.png" alt="dbm" width=1000px />
+<img src="https://sine-img-bed.oss-cn-beijing.aliyuncs.com/projects/minidb/syscmd.png" alt="dbm" width=700px />
 
 样例表：
 
-<img src="https://sine-img-bed.oss-cn-beijing.aliyuncs.com/projects/minidb/tables.png" alt="ins" width=1000px />
+<img src="https://sine-img-bed.oss-cn-beijing.aliyuncs.com/projects/minidb/tables.png" alt="ins" width=700px />
 
 插入语句与复杂查询（投影，条件，多表连接）：
 
-<img src="https://sine-img-bed.oss-cn-beijing.aliyuncs.com/projects/minidb/insert_select.png" alt="sel" width=1000px />
+<img src="https://sine-img-bed.oss-cn-beijing.aliyuncs.com/projects/minidb/insert_select.png" alt="sel" width=700px />
 
 自动绘制物理计划（对应上面的查询）：
 
@@ -90,4 +90,4 @@ WHERE expression;
 
 更新语句：
 
-<img src="https://sine-img-bed.oss-cn-beijing.aliyuncs.com/projects/minidb/update.png" alt="upd" width=1000px />
+<img src="https://sine-img-bed.oss-cn-beijing.aliyuncs.com/projects/minidb/update.png" alt="upd" width=700px />
