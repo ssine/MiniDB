@@ -4,7 +4,7 @@
   "description": "a core implementation of dbms",
   "main": "index.js",
   "scripts": {
-    "build": "tsc & shx cp -rf ./src/pages/ ./js/pages/",
+    "build": "tsc & shx cp -rf ./src/pages/* ./js/pages/",
     "watch": "tsc -w",
     "start": "npm run build && electron ./js/main/main.js",
     "cc": "jison ./src/parser/sql.y -o ./src/parser/parser.js & shx mkdir -p js/parser & shx cp -f ./src/parser/parser.js ./js/parser/parser.js"
@@ -15,8 +15,7 @@
     "electron": "4.0.2",
     "jison": "^0.4.18",
     "shx": "^0.3.2",
-    "typescript": "^3.2.4",
-    "xterm": "^3.10.1"
+    "typescript": "^3.2.4"
   },
   "repository": {
     "type": "git",
