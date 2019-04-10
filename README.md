@@ -78,7 +78,7 @@ WHERE expression;
 
 样例表：
 
-<img src="https://sine-img-bed.oss-cn-beijing.aliyuncs.com/projects/minidb/tables.png" alt="ins" width=700px />
+<img src="https://sine-img-bed.oss-cn-beijing.aliyuncs.com/projects/minidb/tables.png?cache" alt="ins" width=700px />
 
 插入语句与复杂查询（投影，条件，多表连接）：
 
