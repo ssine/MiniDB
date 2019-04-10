@@ -7,7 +7,7 @@ function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     height: 400,
-    width: 800,
+    width: 711,
     webPreferences: {
       nodeIntegration: true
     }
@@ -77,15 +77,18 @@ import {
 
 let data_path = './data.json';
 
+// Load the persisted data, 
 let sys_data: SystemData = load_data(data_path);
 
+// When a command line input arrives, process it and return the result.
 ipcMain.on('command-line', (event, arg) => {
   event.returnValue = process_input(arg);
 });
 
 function process_input(input: string): string {
 
-  let timer = new Date().valueOf();
+  // Timer start
+  // let timer = new Date().valueOf();
 
   input = input.trim();
 
@@ -97,13 +100,14 @@ function process_input(input: string): string {
     let cmd = input.split(' ', 1)[0];
     switch (cmd) {
       case 'exit':
+        // Save data and quit the app.
         save_data(data_path, sys_data);
         app.quit();
         return '';
       case 'file':
+        // Use the file as input SQL.
         let filename = input.substr(4).trim();
         try {
-          // console.log(path.join(__dirname, filename));
           input = fs.readFileSync(path.join(__dirname, filename)).toString();
           res = run_sql(input);
         } catch (err) {
@@ -136,10 +140,11 @@ function process_input(input: string): string {
     // sql statements
     res = run_sql(input);
   }
-  
-  let interval = (new Date().valueOf() - timer) / 1000;
 
+  // Timer stop
+  // let interval = (new Date().valueOf() - timer) / 1000;
   // res = res.trim() + '\r\nquery finished in ' + interval.toString() + ' seconds.';
+
   return res;
 }
 
@@ -157,16 +162,22 @@ function run_sql(input: string): string {
   }
 
   let res = '';
+
+  // Semantic checking results.
   let check_res: boolean, check_err: string;
-  // console.log(trees);
+
   trees.forEach(tree => {
+    // Process all the SQL parse trees.
+
     if (!tree) return '';
+
+    // Perform semantic checking.
     [check_res, check_err] = ql_check(sys_data, tree);
     if (!check_res) {
       res += check_err + '\r\nsemantic check failed!\r\n';
       return;
     }
-    // console.log(tree);
+
     switch (tree.statement) {
       case 'CREATE TABLE':
         res += create_table(sys_data, tree);

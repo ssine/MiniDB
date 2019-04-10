@@ -1,46 +1,233 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>MiniDB</title>
-    <link rel="stylesheet" href="css/xterm.css" />
-    <style>
-      #terminal-container {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0px;
-        left: 0px;
-        overflow: hidden;
-      }
-      ::-webkit-scrollbar{
-        width: 10px;
-        height: 10px;
-        background-color: #f5f5f5;
-      }
+<head>
+<title>hterm test page</title>
+<meta charset='utf-8'/>
+<script src='./js/hterm_all.js'></script>
+<style>
+html {
+  height: 100%;
+}
+body {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  margin: 0px;
+  padding: 0px;
+}
+#terminal {
+  display: block;
+  position: relative;
+  height: 100%;
+  width: 100%;
+  margin: 0px;
+  padding: 0px;
+}
+</style>
+</head>
 
-      ::-webkit-scrollbar-track{
-        border-radius: 0px;
-        background-color: #F9E4FE;
-      }
+<body>
+<div id='terminal'></div>
+<script>
+var ipcRenderer = require('electron').ipcRenderer;
 
-      ::-webkit-scrollbar-thumb{
-        height: 20px;
-        border-radius: 0px;
-        background-color: #881798;
-      }
+function initContent(io) {
+  let logos = [
+"\r\n\
+$$\\      $$\\ $$\\           $$\\ $$$$$$$\\  $$$$$$$\\  \r\n\
+$$$\\    $$$ |\\__|          \\__|$$  __$$\\ $$  __$$\\ \r\n\
+$$$$\\  $$$$ |$$\\ $$$$$$$\\  $$\\ $$ |  $$ |$$ |  $$ |\r\n\
+$$\\$$\\$$ $$ |$$ |$$  __$$\\ $$ |$$ |  $$ |$$$$$$$\\ |\r\n\
+$$ \\$$$  $$ |$$ |$$ |  $$ |$$ |$$ |  $$ |$$  __$$\\ \r\n\
+$$ |\\$  /$$ |$$ |$$ |  $$ |$$ |$$ |  $$ |$$ |  $$ |\r\n\
+$$ | \\_/ $$ |$$ |$$ |  $$ |$$ |$$$$$$$  |$$$$$$$  |\r\n\
+\\__|     \\__|\\__|\\__|  \\__|\\__|\\_______/ \\_______/ \r\n\
+          Copyright (C) 1998-2019 LSY.\r\n\
+              All Rights Reserved.\r\n\
+",
+"\r\n\
+                         ____    ____    \r\n\
+ /'\\_/`\\  __          __/\\  _`\\ /\\  _`\\    \r\n\
+/\\      \\/\\_\\    ___ /\\_\\ \\ \\/\\ \\ \\ \\L\\ \\  \r\n\
+\\ \\ \\__\\ \\/\\ \\ /' _ `\\/\\ \\ \\ \\ \\ \\ \\  _ <' \r\n\
+ \\ \\ \\_/\\ \\ \\ \\/\\ \\/\\ \\ \\ \\ \\ \\_\\ \\ \\ \\L\\ \\\r\n\
+  \\ \\_\\\\ \\_\\ \\_\\ \\_\\ \\_\\ \\_\\ \\____/\\ \\____/\r\n\
+   \\/_/ \\/_/\\/_/\\/_/\\/_/\\/_/\\/___/  \\/___/ \r\n\
+        Copyleft (Ɔ) 1998-2019 LSY.\r\n\
+           Some Rights Reserved.\r\n\
+",
+"\r\n\
+███╗   ███╗██╗███╗   ██╗██╗██████╗ ██████╗ \r\n\
+████╗ ████║██║████╗  ██║██║██╔══██╗██╔══██╗\r\n\
+██╔████╔██║██║██╔██╗ ██║██║██║  ██║██████╔╝\r\n\
+██║╚██╔╝██║██║██║╚██╗██║██║██║  ██║██╔══██╗\r\n\
+██║ ╚═╝ ██║██║██║ ╚████║██║██████╔╝██████╔╝\r\n\
+╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═╝╚═════╝ ╚═════╝ \r\n\
+          Copyright (C) 1998-2019 LSY.\r\n\
+              All Rights Reserved.\r\n\
+",
+"\r\n\
+,,                ,,                        \r\n\
+`7MMM.     ,MMF'  db                db  `7MM\"\"\"Yb. `7MM\"\"\"Yp, \r\n\
+  MMMb    dPMM                            MM    `Yb. MM    Yb \r\n\
+  M YM   ,M MM  `7MM  `7MMpMMMb.  `7MM    MM     `Mb MM    dP \r\n\
+  M  Mb  M' MM    MM    MM    MM    MM    MM      MM MM\"\"\"bg. \r\n\
+  M  YM.P'  MM    MM    MM    MM    MM    MM     ,MP MM    `Y \r\n\
+  M  `YM'   MM    MM    MM    MM    MM    MM    ,dP' MM    ,9 \r\n\
+.JML. `'  .JMML..JMML..JMML  JMML..JMML..JMMmmmdP' .JMMmmmd9  \r\n\
+          Copyright (C) 1998-2019 LSY.\r\n\
+              All Rights Reserved.\r\n\
+"];
 
-      ::-webkit-scrollbar-thumb:hover {
-        background: #A31FBF;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="terminal-container"></div>
-  </body>
+  io.print("\x1b[38:2:153:217:234m");
+  io.println(logos[1]);
+};
 
-  <script>
-    // You can also require other files to run in this process
-    require('../renderer/renderer.js')
-  </script>
+function setupHterm() {
+  const term = new hterm.Terminal();
+
+  function getCursorPosition() {
+    return {
+      row: term.screen_.cursorPosition.row,
+      col: term.screen_.cursorPosition.column
+    };
+  }
+  function getRowText(row) {
+    return term.screen_.rowsArray[row].textContent;
+  }
+  function getLineInput() {
+    return getRowText(getCursorPosition().row).substring(8);
+  }
+  function moveCursorTo(row, col) {
+    term.screen_.setCursorPosition(row, col);
+  }
+  function sendMessage(msg) {
+    return ipcRenderer.sendSync('command-line', msg);
+  }
+  function getScreenHeight() {
+    return term.screen_.getHeight();
+  }
+  function getScreenWidth() {
+    return term.screen_.getWidth();
+  }
+
+  term.prefs_.set('font-family', 'Consolas')
+
+  term.onTerminalReady = function() {
+    const io = this.io.push();
+    function printPrompt() {
+      io.print(
+          '\x1b[38:2:200:191:231mminidb>' +
+          '\x1b[0m ');
+    }
+    function printMultiPrompt() {
+      io.print(
+          '\x1b[38:2:200:191:231m   ...>' +
+          '\x1b[0m ');
+    }
+
+    let bound = {left: 0, right: getScreenWidth()};
+    let input = '';
+    let history = [], his_pos = 0;
+    function get_prev_his() {
+      if (his_pos > 0) {
+        his_pos--;
+        return history[his_pos];
+      } else return '';
+    }
+    function get_next_his() {
+      if (his_pos < history.length) {
+        his_pos++;
+        return history[his_pos] || '';
+      } return '';
+    }
+    function push_his(input) {
+      history.push(input);
+      his_pos = history.length;
+    }
+
+    io.onVTKeystroke = (string) => {
+      // console.log(getScreenHeight(), getCursorPosition().row);
+      switch (string) {
+        case '\r':
+          input += getLineInput() + ' ';
+          push_his(getLineInput());
+          io.println('');
+          let text = input.trim();
+          // console.log(text);
+          if (text[0] == '.' || text[text.length-1] == ';') {
+            io.print('\x1b[38:2:248:237:187m')
+            io.print(sendMessage(text));
+            input = '';
+            io.println('');
+            printPrompt();
+          } else {
+            printMultiPrompt();
+          }
+          break;
+        case '\u001b[A': // up arrow
+          io.print('\x1b[2K\x1b[0G');
+          if (input == '') printPrompt();
+          else printMultiPrompt();
+          io.print(get_prev_his());
+          break;
+        case '\u001b[B': // down arrow
+          io.print('\x1b[2K\x1b[0G');
+          if (input == '') printPrompt();
+          else printMultiPrompt();
+          io.print(get_next_his());
+          break;
+        case '\u001b[D': // left arrow
+          if (getCursorPosition().col > bound.left)
+            io.print(string);
+          break;
+        case '\u001b[C': // right arrow
+          if (getCursorPosition().col < bound.right - 1)
+          io.print(string);
+          break;
+          case '\x7f': // backspace
+          if (getCursorPosition().col > bound.left)
+          io.print('\u001b[D\x1b[1P');
+          break;
+        default:
+          if (getCursorPosition().col < bound.right - 1)
+            io.print(string);
+          // console.log(string.charCodeAt(0));
+          // console.log(getRowText(getCursorPosition().row));
+          break;
+      }
+    };
+    
+    io.sendString = io.print;
+
+    io.onTerminalResize = function(width, height) {
+      bound.right = width;
+    }
+
+    initContent(io);
+    printPrompt();
+
+    bound.left = getCursorPosition().col;
+
+    this.setCursorVisible(true);
+
+    this.keyboard.characterEncoding = 'raw';
+    this.keyboard.bindings.addBinding('F11', 'PASS');
+    this.keyboard.bindings.addBinding('Ctrl-R', 'PASS');
+    this.keyboard.bindings.addBinding('Alt-F4', 'PASS');
+  };
+  term.decorate(document.querySelector('#terminal'));
+  term.installKeyboard();
+
+  // Useful for console debugging.
+  window.term_ = term;
+}
+
+window.onload = function() {
+  lib.init(setupHterm);
+};
+</script>
+
+</body>
 </html>

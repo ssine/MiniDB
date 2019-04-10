@@ -5,6 +5,9 @@ import { BrowserWindow } from 'electron'
 import * as path from "path";
 
 
+/**
+ * load system data from given path, create an empty one if not exist.
+ */
 function load_data(path: string): SystemData {
   try {
     let data = fs.readFileSync(path).toString();
@@ -18,12 +21,18 @@ function load_data(path: string): SystemData {
   }
 }
 
+/**
+ * Save system data to the given path.
+ */
 function save_data(path: string, data: SystemData): boolean {
   fs.writeFileSync(path, JSON.stringify(data));
   console.log('Data file saved.');
   return true;
 }
 
+/**
+ * Plot the give physics plan in a new window.
+ */
 function plot_plan(plan: plan_info) {
   let window = new BrowserWindow({
     height: 500,

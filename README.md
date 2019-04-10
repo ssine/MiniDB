@@ -26,10 +26,10 @@ npm start
 
 ```text
 .exit                        | 退出
-.file [filename]             | 将文件内容作为输入
-.createdb [database name]    | 创建数据库
-.dropdb [database name]      | 删除数据库
-.usedb [database name]       | 使用数据库
+.file filename               | 将文件内容作为输入
+.createdb database_name      | 创建数据库
+.dropdb database_name        | 删除数据库
+.usedb database_name         | 使用数据库
 .showdb                      | 显示所有数据库
 .showtb                      | 显示当前数据库所有表
 .planon                      | 显示 SELECT 语句执行计划
@@ -39,12 +39,29 @@ npm start
 所有 SQL 语句输入以 `;` 结尾，目前支持的 SQL 语句：
 
 ```sql
-CREATE TABLE [table name]
-DROP TABLE
-SELECT
-INSERT
-DELETE
-UPDATE
+CREATE TABLE tbl_name (
+    prop1 number,
+    prop2 string
+);
+
+DROP TABLE tbl_name;
+
+SELECT col_name_1, col_name_2
+FROM tbl_name_1
+INNER JOIN tbl_name_2 ON expression
+INNER JOIN ...
+WHERE expression;
+
+INSERT INTO tbl_name VALUES
+    (val_1, val_2),
+    (val_1, val_2)
+;
+
+DELETE FROM tbl_name WHERE expression;
+
+UPDATE tbl_name
+SET col = expression
+WHERE expression;
 ```
 
 ## TODO
@@ -55,4 +72,22 @@ UPDATE
 
 ## Showcase
 
+系统指令，数据库管理：
 
+<img src="https://sine-img-bed.oss-cn-beijing.aliyuncs.com/minidb/database_mng.png" alt="dbm" width=573px />
+
+样例表与插入语句：
+
+<img src="https://sine-img-bed.oss-cn-beijing.aliyuncs.com/minidb/insert.png" alt="ins" width=573px />
+
+复杂查询（投影，条件，多表连接）：
+
+<img src="https://sine-img-bed.oss-cn-beijing.aliyuncs.com/minidb/complex_select.png" alt="sel" width=573px />
+
+自动绘制物理计划（对应上面的查询）：
+
+<img src="https://sine-img-bed.oss-cn-beijing.aliyuncs.com/minidb/plan.png" alt="plan" width=300px />
+
+更新语句：
+
+<img src="https://sine-img-bed.oss-cn-beijing.aliyuncs.com/minidb/update.png" alt="upd" width=573px />

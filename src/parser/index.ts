@@ -1,5 +1,8 @@
 import { parser } from './parser'
 
+/**
+ * Mixin function for the parser.
+ */
 parser.yy.extend = function() {
   let target = arguments[0] || {};
   if (typeof target != "object" && typeof target != "function") {
@@ -67,7 +70,7 @@ interface Create {
   statement: 'CREATE TABLE',
   table: string,
   database?: string,
-  column_defs: {column: string, type: string}[]
+  column_defs: {column: string, type: ("string"|"number"|"date")}[]
 }
 
 interface Drop {

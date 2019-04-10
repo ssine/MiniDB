@@ -120,8 +120,19 @@ class table_update {
 }
 
 interface Scanner {
+  /**
+   * Get the next valid record of the Scanner
+   */
   get_next: () => any[] | false;
+
+  /**
+   * Get the id of the columns.
+   */
   get_col_id: () => string[];
+
+  /**
+   * Get Scanner infomation (name, children) for visualization.
+   */
   get_info: () => plan_info;
 }
 
