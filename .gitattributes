@@ -1,2 +1,2 @@
-/src/pages/js/  export-ignore
-/src/pages/css/ export-ignore
+/src/pages/js/*  linguist-vendored
+/src/pages/css/* linguist-vendored
