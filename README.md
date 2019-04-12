@@ -66,7 +66,6 @@ WHERE expression;
 
 ## TODO
 
-* 命令行历史记录功能？
 * 建立索引
 * 更多的执行计划
 
