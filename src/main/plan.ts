@@ -38,6 +38,7 @@
 
 import { Table } from './data';
 import { Expression, ColumnName, Literal } from '../parser'
+import { emitter } from './emitter'
 
 class table_insert {
   table: Table;
@@ -53,6 +54,13 @@ class table_insert {
   get_next():boolean {
     if (this.pos < this.rows.length) {
       this.table.data.push(this.rows[this.pos++]);
+
+      emitter.emit('data-modified', {
+        type: 'insert',
+        table: this.table.name,
+        row: this.rows[this.pos-1]
+      });
+
       return true;
     } else {
       return false;

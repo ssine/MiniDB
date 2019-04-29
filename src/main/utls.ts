@@ -3,8 +3,7 @@ import { SystemData } from './data'
 import { plan_info } from './plan'
 import { BrowserWindow } from 'electron'
 import * as path from "path";
-// import { EventEmitter } from 'events'
-
+import { emitter } from './emitter'
 
 /**
  * load system data from given path, create an empty one if not exist.
@@ -67,6 +66,10 @@ function show_panel(data: SystemData) {
   // window.webContents.openDevTools();
 
   window.webContents.on('did-finish-load', () => {
+    window.webContents.send('panel_update', data);
+  });
+  
+  emitter.on('data-modified', () => {
     window.webContents.send('panel_update', data);
   });
 
