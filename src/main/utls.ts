@@ -3,6 +3,7 @@ import { SystemData } from './data'
 import { plan_info } from './plan'
 import { BrowserWindow } from 'electron'
 import * as path from "path";
+// import { EventEmitter } from 'events'
 
 
 /**
@@ -52,4 +53,26 @@ function plot_plan(plan: plan_info) {
   });
 }
 
-export { load_data, save_data, plot_plan };
+/**
+ * Show a panel that displays all the information
+ */
+function show_panel(data: SystemData) {
+  let window = new BrowserWindow({
+    height: 600,
+    width: 900
+  });
+
+  window.loadFile(path.join(__dirname, "../pages/panel.html"));
+
+  // window.webContents.openDevTools();
+
+  window.webContents.on('did-finish-load', () => {
+    window.webContents.send('panel_update', data);
+  });
+
+  window.on('closed', () => {
+    window = null;
+  });
+}
+
+export { load_data, save_data, plot_plan, show_panel };

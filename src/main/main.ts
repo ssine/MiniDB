@@ -64,6 +64,7 @@ import {
   show_database,
   show_table,
   set_plan_drawing,
+  set_panel_on,
   create_table,
   drop_table
 } from './manager'
@@ -134,6 +135,9 @@ function process_input(input: string): string {
         break;
       case 'planoff':
         res = set_plan_drawing(sys_data, false);
+        break;
+      case 'showpanel':
+        res = set_panel_on(sys_data);
         break;
     }
   } else {
