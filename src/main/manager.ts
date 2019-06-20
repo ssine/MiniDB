@@ -3,6 +3,7 @@
  */
 import { Database, SystemData, Table } from './data'
 import { Create } from '../parser'
+import { show_panel } from './utls'
 
 /************ System Commands ************/
 
@@ -70,8 +71,17 @@ function show_table(data: SystemData): string {
  */
 function set_plan_drawing(data: SystemData, state: boolean): string {
   data.show_plan = state;
-  if (state) return 'plan drawing on.'
-  else return 'plan drawing off.'
+  if (state) return 'plan drawing on.';
+  else return 'plan drawing off.';
+}
+
+/**
+ * Draw physics plans when a SELECT statement is executed.
+ */
+function set_panel_on(data: SystemData): string {
+  data.panel_on = true;
+  show_panel(data);
+  return 'panel opened.';
 }
 
 /************ Data Definition Language ************/
@@ -119,6 +129,7 @@ export {
   show_database,
   show_table,
   set_plan_drawing,
+  set_panel_on,
   create_table,
   drop_table
 };

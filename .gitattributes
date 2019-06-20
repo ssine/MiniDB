@@ -1,0 +1,3 @@
+/src/pages/js/*  linguist-vendored
+/src/pages/css/* linguist-vendored
+*.html           linguist-detectable=true

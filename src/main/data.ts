@@ -19,6 +19,7 @@ class SystemData {
   dbs: {[db_name: string]: Database};
   cur_db: string;
   show_plan: boolean;
+  panel_on: boolean;
 }
 
 export { Table, Database, SystemData };

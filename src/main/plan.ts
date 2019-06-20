@@ -38,6 +38,7 @@
 
 import { Table } from './data';
 import { Expression, ColumnName, Literal } from '../parser'
+import { emitter } from './emitter'
 
 class table_insert {
   table: Table;
@@ -53,6 +54,13 @@ class table_insert {
   get_next():boolean {
     if (this.pos < this.rows.length) {
       this.table.data.push(this.rows[this.pos++]);
+
+      emitter.emit('data-modified', {
+        type: 'insert',
+        table: this.table.name,
+        row: this.rows[this.pos-1]
+      });
+
       return true;
     } else {
       return false;
@@ -267,29 +275,26 @@ class table_filter implements Scanner {
 class table_project implements Scanner {
   sc: Scanner;
   col_id: string[];
-  idx_mask: Int32Array;
+  idx_map: number[];
 
   constructor(sc: Scanner, cols: string[]) {
     this.sc = sc;
     this.col_id = cols;
     let old_col_id = sc.get_col_id();
 
-    this.idx_mask = new Int32Array(old_col_id.length);
-    cols.forEach(col => this.idx_mask[old_col_id.indexOf(col)] = 1);
+    this.idx_map = cols.map(c => old_col_id.indexOf(c));
 
     // console.log('new: ' + this.col_id.toString());
     // console.log('old: ' + old_col_id.toString());
-    // console.log('mask: ' + this.idx_mask.toString());
+    // console.log('mask: ' + this.idx_map.toString());
   }
 
   get_next(): any[] | false {
     let row = this.sc.get_next();
     if (row) {
       let res = [];
-      row.forEach((val, idx) => {
-        if (this.idx_mask[idx]) {
-          res.push(val);
-        }
+      this.idx_map.forEach(idx => {
+        res.push(row[idx]);
       });
       return res;
     }
