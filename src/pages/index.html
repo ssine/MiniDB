@@ -15,13 +15,14 @@ body {
   overflow: hidden;
   margin: 0px;
   padding: 0px;
+  background: #101010;
 }
 #terminal {
   display: block;
-  position: relative;
+  position: absolute;
   height: 100%;
-  width: 100%;
-  margin: 0px;
+  width: calc(100% - 5px);
+  right: 0px;
   padding: 0px;
 }
 </style>
@@ -186,9 +187,12 @@ function setupHterm() {
           if (getCursorPosition().col < bound.right - 1)
           io.print(string);
           break;
-          case '\x7f': // backspace
+        case '\x7f': // backspace
           if (getCursorPosition().col > bound.left)
           io.print('\u001b[D\x1b[1P');
+          break;
+        case '\t': // tab -> 4 spaces!
+          io.print('    ');
           break;
         default:
           if (getCursorPosition().col < bound.right - 1)
