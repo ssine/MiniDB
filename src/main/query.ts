@@ -21,6 +21,7 @@ import {
   table_project
 } from './plan'
 import { plot_plan } from './utls'
+import { emitter } from './emitter'
 
 function get_table(data: SystemData, clause: TableName): Table {
   let db = clause.database ? clause.database : data.cur_db;
@@ -40,6 +41,7 @@ function ql_insert(data: SystemData, tree: Insert): string {
 
   while (iter.get_next()) cnt++;
 
+  emitter.emit('data-modified');
   return cnt + ' tuples inserted.';
 }
 
@@ -51,6 +53,7 @@ function ql_delete(data: SystemData, tree: Delete): string {
 
   while (iter.get_next()) cnt++;
 
+  emitter.emit('data-modified');
   return cnt + ' tuples deleted.';
 }
 
@@ -65,6 +68,7 @@ function ql_update(data: SystemData, tree: Update): string {
 
   while (iter.get_next()) cnt++;
 
+  emitter.emit('data-modified');
   return cnt + ' tuples updated.';
 }
 

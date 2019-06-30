@@ -4,6 +4,7 @@
 import { Database, SystemData, Table } from './data'
 import { Create } from '../parser'
 import { show_panel } from './utls'
+import { emitter } from './emitter'
 
 /************ System Commands ************/
 
@@ -15,6 +16,8 @@ function create_database(data: SystemData, name: string): string {
   db.name = name;
   db.tables = {};
   data.dbs[name] = db;
+
+  emitter.emit('data-modified');
   return 'new database created.';
 }
 
@@ -25,6 +28,8 @@ function drop_database(data: SystemData, name: string): string {
   delete data.dbs[name];
   if (data.cur_db == name) 
     data.cur_db = '';
+
+  emitter.emit('data-modified');  
   return 'database destroyed.';
 }
 
@@ -34,8 +39,11 @@ function drop_database(data: SystemData, name: string): string {
 function use_database(data: SystemData, name: string): string {
   if (data.dbs[name]) {
     data.cur_db = name;
+
+    emitter.emit('data-modified');
     return 'using database ' + name + '.';
   } else {
+    emitter.emit('data-modified');
     return name + ' is not a database!';
   }
 }
@@ -71,6 +79,7 @@ function show_table(data: SystemData): string {
  */
 function set_plan_drawing(data: SystemData, state: boolean): string {
   data.show_plan = state;
+  emitter.emit('data-modified');
   if (state) return 'plan drawing on.';
   else return 'plan drawing off.';
 }
@@ -110,6 +119,7 @@ function create_table(data: SystemData, tree: Create): string {
 
   data.dbs[dbn].tables[tree.table] = tb;
   
+  emitter.emit('data-modified');
   return 'new table created.';
 }
 
@@ -118,6 +128,7 @@ function create_table(data: SystemData, tree: Create): string {
  */
 function drop_table(data: SystemData, tree: any): string {
   delete data.dbs[data.cur_db].tables[tree.table];
+  emitter.emit('data-modified');
   return 'table destroyed.';
 }
 
