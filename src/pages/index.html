@@ -5,11 +5,6 @@
 <meta charset='utf-8'/>
 <script src='./js/hterm_all.js'></script>
 <style>
-@font-face
-{
-  font-family: Consolas;
-  src: url('font/Consolas.ttf');
-}
 html {
   height: 100%;
 }
@@ -116,7 +111,7 @@ function setupHterm() {
     return term.screen_.getWidth();
   }
 
-  term.prefs_.set('font-family', 'Consolas')
+  term.prefs_.set('font-family', "Consolas");
 
   term.onTerminalReady = function() {
     const io = this.io.push();
@@ -223,6 +218,14 @@ function setupHterm() {
     this.keyboard.bindings.addBinding('F11', 'PASS');
     this.keyboard.bindings.addBinding('Ctrl-R', 'PASS');
     this.keyboard.bindings.addBinding('Alt-F4', 'PASS');
+
+    var s = term.document_.createElement('style');
+    s.innerHTML = `
+    @font-face {
+      font-family: Consolas;
+      src: url('font/Consolas.ttf');
+    }`;
+    term.document_.head.appendChild(s);
   };
   term.decorate(document.querySelector('#terminal'));
   term.installKeyboard();
