@@ -94,9 +94,16 @@ interface Update {
   where: Expression
 }
 
-type Tree = Select|Insert|Create|Drop|Delete|Update
+interface Transaction {
+  statement: 'TRANSACTION'
+  contents: Trees;
+}
+
+type Tree = Select|Insert|Create|Drop|Delete|Update|Transaction
 
 interface Trees extends Array<Tree> { }
+
+
 
 export {
   parser,
@@ -110,6 +117,7 @@ export {
   Drop,
   Delete,
   Update,
+  Transaction,
   Tree,
   Trees
 }

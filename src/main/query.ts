@@ -5,6 +5,7 @@ import {
   TableName,
   Delete,
   Insert,
+  Transaction,
   Expression,
   ColumnName,
   Literal
@@ -20,6 +21,7 @@ import {
   table_filter,
   table_project
 } from './plan'
+import {create_table, drop_table} from "./manager"
 import { plot_plan } from './utls'
 import { emitter } from './emitter'
 
@@ -104,6 +106,53 @@ function ql_select(data: SystemData, tree: Select): string {
   if (data.show_plan) plot_plan(iter.get_info());
 
   return scanner_to_string(iter);
+}
+
+function ql_transaction(sys_data: SystemData, tree: Transaction): string {
+  let res = '';
+  let check_res: boolean, check_err: string;
+  tree.contents.forEach(stmt_tree => {
+    // Process all the SQL parse trees.
+
+    if (!stmt_tree) return '';
+
+    // Perform semantic checking.
+    [check_res, check_err] = ql_check(sys_data, stmt_tree);
+    if (!check_res) {
+      res += check_err + '\r\nsemantic check failed!\r\n';
+      return;
+    }
+
+    switch (stmt_tree.statement) {
+      case 'CREATE TABLE':
+        res += create_table(sys_data, stmt_tree);
+        break;
+      case 'DROP TABLE':
+        res += drop_table(sys_data, stmt_tree);
+        break;
+      // case 'CREATE INDEX':
+      // case 'DROP INDEX':
+      case 'SELECT':
+        res += ql_select(sys_data, stmt_tree);
+        break;
+      case 'INSERT':
+        res += ql_insert(sys_data, stmt_tree);
+        break;
+      case 'DELETE':
+        res += ql_delete(sys_data, stmt_tree);
+        break;
+      case 'UPDATE':
+        res += ql_update(sys_data, stmt_tree);
+        break;
+      case 'TRANSACTION':
+        res += ql_transaction(sys_data, stmt_tree);
+        break;
+      default:
+        res += 'Action not yet implemented.\r\n';
+        break;
+    }
+  })
+  return res;
 }
 
 function scanner_to_string(sc: Scanner): string {
@@ -293,7 +342,10 @@ function ql_check(data: SystemData, tree: Tree): [boolean, string] {
         return [false, 'semantic check failed!'];
     }
     case 'INSERT': {
-      // columns exist in table, literal type check
+      // TODO: columns exist in table, literal type check
+      return [true, ''];
+    }
+    case 'TRANSACTION': {
       return [true, ''];
     }
   }
@@ -305,5 +357,6 @@ export {
   ql_delete,
   ql_update,
   ql_select,
+  ql_transaction,
   ql_check
 };

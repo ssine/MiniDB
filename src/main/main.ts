@@ -57,7 +57,7 @@ app.on("activate", () => {
 import { parser, Trees } from '../parser'
 import { SystemData } from './data'
 import * as fs from 'fs'
-import { load_data, save_data } from './utls'
+import { load_data, save_data, new_window } from './utls'
 import {
   create_database,
   drop_database,
@@ -74,6 +74,7 @@ import {
   ql_delete,
   ql_update,
   ql_select,
+  ql_transaction,
   ql_check
 } from './query'
 
@@ -101,6 +102,9 @@ function process_input(input: string): string {
     input = input.substr(1);
     let cmd = input.split(' ', 1)[0];
     switch (cmd) {
+      case 'new_window':
+        new_window();
+        return '';
       case 'exit':
         // Save data and quit the app.
         save_data(data_path, sys_data);
@@ -203,6 +207,9 @@ function run_sql(input: string): string {
         break;
       case 'UPDATE':
         res += ql_update(sys_data, tree);
+        break;
+      case 'TRANSACTION':
+        res += ql_transaction(sys_data, tree);
         break;
       default:
         res += 'Action not yet implemented.\r\n';

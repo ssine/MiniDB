@@ -31,6 +31,8 @@
 'WHERE'                                         return 'WHERE'
 'AND'                                           return 'AND'
 'OR'                                            return 'OR'
+'BEGIN'                                         return 'BEGIN'
+'COMMIT'                                        return 'COMMIT'
 
 [-]?(\d*[.])?\d+[eE]\d+                         return 'NUMBER'
 [-]?(\d*[.])?\d+                                return 'NUMBER'
@@ -80,7 +82,7 @@
 %left ESCAPE
 %left GT LE LT GE
 %left BITAND BITOR LSHIFT RSHIFT
-$left PLUS MINUS
+%left PLUS MINUS
 %left STAR SLASH REM
 %left CONCAT
 %left COLLATE
@@ -118,6 +120,7 @@ sql_stmt
     | select_stmt
     | delete_stmt
     | update_stmt
+    | transaction_stmt
     ;
 
 create_table_stmt
@@ -370,4 +373,11 @@ column_expr_list
 column_expr
     : name EQ expr
         { $$ = {column:$1, expr: $3}; }
+    ;
+
+transaction_stmt
+    : BEGIN SEMICOLON sql_stmt_list COMMIT SEMICOLON
+        {
+            $$ = {statement: 'TRANSACTION', contents: $3}
+        }
     ;

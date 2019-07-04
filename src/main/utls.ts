@@ -78,4 +78,20 @@ function show_panel(data: SystemData) {
   });
 }
 
-export { load_data, save_data, plot_plan, show_panel };
+function new_window() {
+  let window = new BrowserWindow({
+    height: 400,
+    width: 711,
+    webPreferences: {
+      nodeIntegration: true
+    }
+  });
+
+  window.loadFile(path.join(__dirname, "../pages/index.html"));
+
+  window.on('closed', () => {
+    window = null;
+  });
+}
+
+export { load_data, save_data, plot_plan, show_panel, new_window };
