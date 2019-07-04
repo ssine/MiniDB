@@ -74,6 +74,7 @@ import {
   ql_delete,
   ql_update,
   ql_select,
+  ql_transaction,
   ql_check
 } from './query'
 
@@ -203,6 +204,9 @@ function run_sql(input: string): string {
         break;
       case 'UPDATE':
         res += ql_update(sys_data, tree);
+        break;
+      case 'TRANSACTION':
+        res += ql_transaction(sys_data, tree);
         break;
       default:
         res += 'Action not yet implemented.\r\n';
