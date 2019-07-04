@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>hterm test page</title>
+<title>MiniDB</title>
 <meta charset='utf-8'/>
 <script src='./js/hterm_all.js'></script>
 <style>
@@ -15,13 +15,14 @@ body {
   overflow: hidden;
   margin: 0px;
   padding: 0px;
+  background: #101010;
 }
 #terminal {
   display: block;
-  position: relative;
+  position: absolute;
   height: 100%;
-  width: 100%;
-  margin: 0px;
+  width: calc(100% - 5px);
+  right: 0px;
   padding: 0px;
 }
 </style>
@@ -46,8 +47,7 @@ $$ | \\_/ $$ |$$ |$$ |  $$ |$$ |$$$$$$$  |$$$$$$$  |\r\n\
           Copyright (C) 1998-2019 LSY.\r\n\
               All Rights Reserved.\r\n\
 ",
-"\r\n\
-                         ____    ____    \r\n\
+"                         ____    ____    \r\n\
  /'\\_/`\\  __          __/\\  _`\\ /\\  _`\\    \r\n\
 /\\      \\/\\_\\    ___ /\\_\\ \\ \\/\\ \\ \\ \\L\\ \\  \r\n\
 \\ \\ \\__\\ \\/\\ \\ /' _ `\\/\\ \\ \\ \\ \\ \\ \\  _ <' \r\n\
@@ -67,8 +67,7 @@ $$ | \\_/ $$ |$$ |$$ |  $$ |$$ |$$$$$$$  |$$$$$$$  |\r\n\
           Copyright (C) 1998-2019 LSY.\r\n\
               All Rights Reserved.\r\n\
 ",
-"\r\n\
-,,                ,,                        \r\n\
+",,                ,,                        \r\n\
 `7MMM.     ,MMF'  db                db  `7MM\"\"\"Yb. `7MM\"\"\"Yp, \r\n\
   MMMb    dPMM                            MM    `Yb. MM    Yb \r\n\
   M YM   ,M MM  `7MM  `7MMpMMMb.  `7MM    MM     `Mb MM    dP \r\n\
@@ -112,7 +111,7 @@ function setupHterm() {
     return term.screen_.getWidth();
   }
 
-  term.prefs_.set('font-family', 'Consolas')
+  term.prefs_.set('font-family', "Consolas");
 
   term.onTerminalReady = function() {
     const io = this.io.push();
@@ -186,9 +185,12 @@ function setupHterm() {
           if (getCursorPosition().col < bound.right - 1)
           io.print(string);
           break;
-          case '\x7f': // backspace
+        case '\x7f': // backspace
           if (getCursorPosition().col > bound.left)
           io.print('\u001b[D\x1b[1P');
+          break;
+        case '\t': // tab -> 4 spaces!
+          io.print('    ');
           break;
         default:
           if (getCursorPosition().col < bound.right - 1)
@@ -216,6 +218,14 @@ function setupHterm() {
     this.keyboard.bindings.addBinding('F11', 'PASS');
     this.keyboard.bindings.addBinding('Ctrl-R', 'PASS');
     this.keyboard.bindings.addBinding('Alt-F4', 'PASS');
+
+    var s = term.document_.createElement('style');
+    s.innerHTML = `
+    @font-face {
+      font-family: Consolas;
+      src: url('font/Consolas.ttf');
+    }`;
+    term.document_.head.appendChild(s);
   };
   term.decorate(document.querySelector('#terminal'));
   term.installKeyboard();

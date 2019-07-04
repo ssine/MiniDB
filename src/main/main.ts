@@ -1,10 +1,11 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, Menu } from "electron";
 import * as path from "path";
 
 let mainWindow: Electron.BrowserWindow;
 
 function createWindow() {
   // Create the browser window.
+  // Menu.setApplicationMenu(null);
   mainWindow = new BrowserWindow({
     height: 400,
     width: 711,
