@@ -57,7 +57,7 @@ app.on("activate", () => {
 import { parser, Trees } from '../parser'
 import { SystemData } from './data'
 import * as fs from 'fs'
-import { load_data, save_data } from './utls'
+import { load_data, save_data, new_window } from './utls'
 import {
   create_database,
   drop_database,
@@ -102,6 +102,9 @@ function process_input(input: string): string {
     input = input.substr(1);
     let cmd = input.split(' ', 1)[0];
     switch (cmd) {
+      case 'new_window':
+        new_window();
+        return '';
       case 'exit':
         // Save data and quit the app.
         save_data(data_path, sys_data);
