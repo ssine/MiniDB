@@ -342,7 +342,13 @@ function ql_check(data: SystemData, tree: Tree): [boolean, string] {
         return [false, 'semantic check failed!'];
     }
     case 'INSERT': {
-      // TODO: columns exist in table, literal type check
+      let tb = get_table(data, tree);
+      if (!tb)
+        return [false, 'table not exists!'];
+      for(let i = 0; i < tree.values.length; i++) {
+        if(tree.values[i].length != tb.col_name.length)
+          return [false, 'invalid insert values!'];
+      }
       return [true, ''];
     }
     case 'TRANSACTION': {
