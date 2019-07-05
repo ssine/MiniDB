@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain, Menu } from "electron";
 import * as path from "path";
-
+import * as bodyParser from "body-parser"
+import * as express from "express"
 let mainWindow: Electron.BrowserWindow;
 
 function createWindow() {
@@ -54,7 +55,7 @@ app.on("activate", () => {
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
 
-import { parser, Trees } from '../parser'
+import { parser, Trees, Tree } from '../parser'
 import { SystemData } from './data'
 import * as fs from 'fs'
 import { load_data, save_data, new_window } from './utls'
@@ -83,12 +84,30 @@ let data_path = './data.json';
 // Load the persisted data, 
 let sys_data: SystemData = load_data(data_path);
 
-// When a command line input arrives, process it and return the result.
-ipcMain.on('command-line', (event, arg) => {
-  event.returnValue = process_input(arg);
-});
+// Transactions
+let trans = {}
 
-function process_input(input: string): string {
+// When a command line input arrives, process it and return the result.
+// ipcMain.on('command-line', (event, arg) => {
+//   event.returnValue = process_input(arg);
+// });
+
+// Use http instead of ipc
+let webapp = express()
+webapp.use(bodyParser.urlencoded({ extended: false }));  
+webapp.post('/', function(request, response) {
+  // console.log('recieve sql');
+  let arg: string = request.body.content;
+  // console.log(arg);
+  let process_res = process_input(arg, response);
+  // console.log('***result:\n '+process_res);
+  response.send(process_res);
+})
+webapp.listen('8081', function() {
+    console.log('server starting');
+})
+
+function process_input(input: string, response): string {
 
   // Timer start
   // let timer = new Date().valueOf();

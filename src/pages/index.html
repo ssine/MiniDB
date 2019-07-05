@@ -32,6 +32,7 @@ body {
 <div id='terminal'></div>
 <script>
 var ipcRenderer = require('electron').ipcRenderer;
+var webrequest = require('request');
 
 function initContent(io) {
   let logos = [
@@ -101,8 +102,38 @@ function setupHterm() {
   function moveCursorTo(row, col) {
     term.screen_.setCursorPosition(row, col);
   }
+  function sendMessageSyn(msg) {
+    return new Promise((resolve, reject) => {
+      let sql_result = webrequest.post( {
+      url: 'http://localhost:8081/',
+      form: { content: msg } 
+      },
+      function (error, response, body) { 
+        if (!error && response.statusCode == 200) {
+              // console.log(body);
+              resolve(body);
+          }
+          else reject('Http Error!');
+      });
+    })
+  }
+  //async sendMessage
+  // DON'T use it
   function sendMessage(msg) {
-    return ipcRenderer.sendSync('command-line', msg);
+    console.log('sending sql: ' + msg);
+    return webrequest.post( {
+      url: 'http://localhost:8081/',
+      form: { content: msg } 
+    },
+    function (error, response, body) { 
+      if (!error && response.statusCode == 200) {
+            console.log(body);
+            // let bodyString = new String(body)
+            return body;
+        }
+        else 'Http Error!';
+    });
+    // return ipcRenderer.sendSync('command-line', msg);
   }
   function getScreenHeight() {
     return term.screen_.getHeight();
@@ -146,7 +177,7 @@ function setupHterm() {
       his_pos = history.length;
     }
 
-    io.onVTKeystroke = (string) => {
+    io.onVTKeystroke = async function(string) {
       // console.log(getScreenHeight(), getCursorPosition().row);
       switch (string) {
         case '\r':
@@ -156,8 +187,8 @@ function setupHterm() {
           let text = input.trim();
           // console.log(text);
           if (text[0] == '.' || text[text.length-1] == ';') {
-            io.print('\x1b[38:2:248:237:187m')
-            io.print(sendMessage(text));
+            io.print('\x1b[38:2:248:237:187m');
+            io.print(await sendMessageSyn(text));
             input = '';
             io.println('');
             printPrompt();
