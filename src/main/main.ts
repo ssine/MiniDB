@@ -84,8 +84,7 @@ let data_path = './data.json';
 // Load the persisted data, 
 let sys_data: SystemData = load_data(data_path);
 
-// Transactions
-let trans = {}
+
 
 // When a command line input arrives, process it and return the result.
 // ipcMain.on('command-line', (event, arg) => {
@@ -101,7 +100,8 @@ webapp.post('/', function(request, response) {
   // console.log(arg);
   let process_res = process_input(arg, response);
   // console.log('***result:\n '+process_res);
-  response.send(process_res);
+  if(process_res != 'do not send')
+    response.send(process_res);
 })
 webapp.listen('8081', function() {
     console.log('server starting');
@@ -123,12 +123,14 @@ function process_input(input: string, response): string {
     switch (cmd) {
       case 'new_window':
         new_window();
-        return '';
+        res = '';
+        break;
       case 'exit':
         // Save data and quit the app.
         save_data(data_path, sys_data);
         app.quit();
-        return '';
+        res = '';
+        break;
       case 'file':
         // Use the file as input SQL.
         let filename = input.substr(4).trim();
@@ -164,6 +166,7 @@ function process_input(input: string, response): string {
         res = set_panel_on(sys_data);
         break;
     }
+    return res;
   } else {
     // sql statements
     res = run_sql(input);
@@ -174,6 +177,10 @@ function process_input(input: string, response): string {
   // res = res.trim() + '\r\nquery finished in ' + interval.toString() + ' seconds.';
 
   return res;
+}
+
+function run_sql_in_trans(time_stamp) {
+  
 }
 
 function run_sql(input: string): string {
@@ -189,7 +196,7 @@ function run_sql(input: string): string {
     return 'parse error.';
   }
 
-  let res = '';
+  let res = 'do not send';
 
   // Semantic checking results.
   let check_res: boolean, check_err: string;
