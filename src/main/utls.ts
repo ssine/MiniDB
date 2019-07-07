@@ -4,6 +4,7 @@ import { plan_info } from './plan'
 import { BrowserWindow } from 'electron'
 import * as path from "path";
 import { emitter } from './emitter'
+import {CheckPoint, writeLog} from './log'
 
 /**
  * load system data from given path, create an empty one if not exist.
@@ -26,6 +27,9 @@ function load_data(path: string): SystemData {
  */
 function save_data(path: string, data: SystemData): boolean {
   fs.writeFileSync(path, JSON.stringify(data));
+  //FIXME: replace mocked running transactions
+  let checkpoint = new CheckPoint(['111', '222']);
+  writeLog(checkpoint);
   console.log('Data file saved.');
   return true;
 }

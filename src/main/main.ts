@@ -127,6 +127,10 @@ function process_input(input: string, response): string {
         new_window();
         res = '';
         break;
+      case 'savedata':
+        save_data(data_path, sys_data);
+        res = '';
+        break;
       case 'exit':
         // Save data and quit the app.
         save_data(data_path, sys_data);
