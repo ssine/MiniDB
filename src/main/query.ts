@@ -24,6 +24,7 @@ import {
 import {create_table, drop_table} from "./manager"
 import { plot_plan } from './utls'
 import { emitter } from './emitter'
+import { TransactionClass } from './transactions';
 
 function get_table(data: SystemData, clause: TableName): Table {
   let db = clause.database ? clause.database : data.cur_db;
@@ -108,9 +109,10 @@ function ql_select(data: SystemData, tree: Select): string {
   return scanner_to_string(iter);
 }
 
-function ql_transaction(sys_data: SystemData, tree: Transaction): string {
+function ql_transaction(sys_data: SystemData, tree: Transaction, response): string {
   let res = '';
   let check_res: boolean, check_err: string;
+
   tree.contents.forEach(stmt_tree => {
     // Process all the SQL parse trees.
 
@@ -145,7 +147,7 @@ function ql_transaction(sys_data: SystemData, tree: Transaction): string {
         res += ql_update(sys_data, stmt_tree);
         break;
       case 'TRANSACTION':
-        res += ql_transaction(sys_data, stmt_tree);
+        res += ql_transaction(sys_data, stmt_tree, response);
         break;
       default:
         res += 'Action not yet implemented.\r\n';

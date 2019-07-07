@@ -78,7 +78,8 @@ import {
   ql_transaction,
   ql_check
 } from './query'
-
+import { TransactionClass } from "./transactions"
+import { request } from "https";
 let data_path = './data.json';
 
 // Load the persisted data, 
@@ -99,9 +100,10 @@ webapp.post('/', function(request, response) {
   let arg: string = request.body.content;
   // console.log(arg);
   let process_res = process_input(arg, response);
-  // console.log('***result:\n '+process_res);
-  if(process_res != 'do not send')
+  console.log('***result: '+process_res);
+  if(process_res != 'do not send') {
     response.send(process_res);
+  }
 })
 webapp.listen('8081', function() {
     console.log('server starting');
@@ -136,7 +138,7 @@ function process_input(input: string, response): string {
         let filename = input.substr(4).trim();
         try {
           input = fs.readFileSync(path.join(__dirname, filename)).toString();
-          res = run_sql(input);
+          res = run_sql(input, response);
         } catch (err) {
           res = 'file not exists.';
         }
@@ -169,7 +171,7 @@ function process_input(input: string, response): string {
     return res;
   } else {
     // sql statements
-    res = run_sql(input);
+    res = run_sql(input, response);
   }
 
   // Timer stop
@@ -179,24 +181,25 @@ function process_input(input: string, response): string {
   return res;
 }
 
-function run_sql_in_trans(time_stamp) {
-  
-}
 
-function run_sql(input: string): string {
+function run_sql(input: string, response): string {
 
-  if (sys_data.cur_db === '')
+  if (sys_data.cur_db === '') {
+    // console.log('not using db');
     return 'not using any database!';
+  }
+    
 
   let trees: Trees;
 
   try {
     trees = parser.parse(input);
   } catch (err) {
+    // console.log('parse error');
     return 'parse error.';
   }
 
-  let res = 'do not send';
+  let res = '';
 
   // Semantic checking results.
   let check_res: boolean, check_err: string;
@@ -210,32 +213,33 @@ function run_sql(input: string): string {
     [check_res, check_err] = ql_check(sys_data, tree);
     if (!check_res) {
       res += check_err + '\r\nsemantic check failed!\r\n';
-      return;
+      return res;
     }
 
     switch (tree.statement) {
       case 'CREATE TABLE':
-        res += create_table(sys_data, tree);
+        new TransactionClass([tree], response, sys_data);
         break;
       case 'DROP TABLE':
-        res += drop_table(sys_data, tree);
+        new TransactionClass([tree], response, sys_data);
         break;
       // case 'CREATE INDEX':
       // case 'DROP INDEX':
       case 'SELECT':
-        res += ql_select(sys_data, tree);
+        new TransactionClass([tree], response, sys_data);
         break;
       case 'INSERT':
-        res += ql_insert(sys_data, tree);
+        new TransactionClass([tree], response, sys_data);
         break;
       case 'DELETE':
-        res += ql_delete(sys_data, tree);
+        new TransactionClass([tree], response, sys_data);
         break;
       case 'UPDATE':
-        res += ql_update(sys_data, tree);
+        new TransactionClass([tree], response, sys_data);
         break;
       case 'TRANSACTION':
-        res += ql_transaction(sys_data, tree);
+        new TransactionClass(tree.contents, response, sys_data);
+        // ql_transaction(sys_data, tree, response);
         break;
       default:
         res += 'Action not yet implemented.\r\n';
@@ -243,5 +247,5 @@ function run_sql(input: string): string {
     }
   });
 
-  return res;
+  return 'do not send';
 }
