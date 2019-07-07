@@ -38,7 +38,8 @@ function ql_insert(data: SystemData, tree: Insert): string {
     val.push(row.map(el => el.data));
   });
 
-  let iter = new table_insert(tb, val);
+  let dbName = tree.database ? tree.database : data.cur_db;
+  let iter = new table_insert(dbName, tb, val);
   let cnt = 0;
 
   while (iter.get_next()) cnt++;
@@ -50,7 +51,8 @@ function ql_insert(data: SystemData, tree: Insert): string {
 function ql_delete(data: SystemData, tree: Delete): string {
   let tb = get_table(data, tree);
 
-  let iter = new table_delete(tb, tree.where);
+  let dbName = tree.database ? tree.database : data.cur_db;
+  let iter = new table_delete(dbName, tb, tree.where);
   let cnt = 0;
 
   while (iter.get_next()) cnt++;
@@ -65,7 +67,8 @@ function ql_update(data: SystemData, tree: Update): string {
   let cols:string[] = [], set_to = [];
   tree.set.forEach(el => {cols.push(el.column); set_to.push(el.expr.data)});
 
-  let iter = new table_update(tb, cols, set_to, tree.where);
+  let dbName = tree.database ? tree.database : data.cur_db;
+  let iter = new table_update(dbName, tb, cols, set_to, tree.where);
   let cnt = 0;
 
   while (iter.get_next()) cnt++;
