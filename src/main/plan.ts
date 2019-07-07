@@ -58,7 +58,7 @@ class table_insert {
     if (this.pos < this.rows.length) {
       //write ahead log
       //FIXME: replace mocked transaction ID
-      let insertLog = new InsertLog('111', this.dbName, this.table.name, this.rows[this.pos]);
+      let insertLog = new InsertLog(111, this.dbName, this.table.name, this.rows[this.pos]);
       writeLog(insertLog);
 
       this.table.data.push(this.rows[this.pos++]);
@@ -96,7 +96,7 @@ class table_delete {
       if (this.where(this.pos)) {
         //write ahead log
         //FIXME: replace mocked transaction ID
-        let deleteLog = new DeleteLog('222', this.dbName, this.table.name, this.pos, this.table.data[this.pos]);
+        let deleteLog = new DeleteLog(222, this.dbName, this.table.name, this.pos, this.table.data[this.pos]);
         writeLog(deleteLog);
 
         this.table.data.splice(this.pos, 1);
@@ -136,7 +136,7 @@ class table_update {
           let updateFrom = this.table.data[this.pos][this.table.col_name.indexOf(col)];
           let updateTo = this.set_to[idx];
           //FIXME: replace mocked transaction ID
-          let updateLog = new UpdateLog('333', this.dbName, this.table.name, this.pos, col, updateFrom, updateTo);
+          let updateLog = new UpdateLog(333, this.dbName, this.table.name, this.pos, col, updateFrom, updateTo);
           writeLog(updateLog);
 
           this.table.data[this.pos][this.table.col_name.indexOf(col)] = this.set_to[idx];

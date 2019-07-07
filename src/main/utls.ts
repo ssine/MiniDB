@@ -28,7 +28,7 @@ function load_data(path: string): SystemData {
 function save_data(path: string, data: SystemData): boolean {
   fs.writeFileSync(path, JSON.stringify(data));
   //FIXME: replace mocked running transactions
-  let checkpoint = new CheckPoint(['111', '222']);
+  let checkpoint = new CheckPoint([111, 222]);
   writeLog(checkpoint);
   console.log('Data file saved.');
   return true;

@@ -20,6 +20,7 @@ class SystemData {
   cur_db: string;
   show_plan: boolean;
   panel_on: boolean;
+  tx_cnt: number;
 }
 
 export { Table, Database, SystemData };
