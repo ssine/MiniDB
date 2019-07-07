@@ -1,4 +1,3 @@
-{"timestamp":"2019/7/7 下午4:40:39","operation":"INSERT","database":"bank_db","table":"account","value":[3,"zzzp"]}
-{"timestamp":"2019/7/7 下午4:40:53","operation":"DELETE","database":"bank_db","table":"account","row":2,"value":[3,"zzzp"]}
-{"timestamp":"2019/7/7 下午4:41:30","operation":"INSERT","database":"bank_db","table":"account","value":[3,"zzzp"]}
-{"timestamp":"2019/7/7 下午4:42:25","operation":"UPDATE","database":"bank_db","table":"account","row":2,"column":"owner_name","updateFrom":"zzzp","updateTo":"zzz"}
+{"timestamp":"2019/7/7 下午8:27:29","operation":"INSERT","transactionID":"111","database":"bank_db","table":"account","value":[3,"zzzp"]}
+{"timestamp":"2019/7/7 下午8:27:56","operation":"DELETE","transactionID":"222","database":"bank_db","table":"account","row":2,"value":[3,"zzzp"]}
+{"timestamp":"2019/7/7 下午8:29:02","operation":"UPDATE","transactionID":"333","database":"bank_db","table":"account","row":0,"column":"owner_name","updateFrom":"sine","updateTo":"txdy"}
