@@ -74,9 +74,9 @@ class CommitTxLog extends Log {
 class CheckPoint {
     timestamp: string;
     operation: string;
-    runningTransactions: number[];
+    runningTransactions: string[];
 
-    constructor(runningTxs: number[]) {
+    constructor(runningTxs: string[]) {
         this.timestamp = (new Date()).toLocaleString();
         this.operation = 'CHECKPOINT';
         this.runningTransactions = runningTxs;
