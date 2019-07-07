@@ -75,7 +75,6 @@ import {
   ql_delete,
   ql_update,
   ql_select,
-  ql_transaction,
   ql_check
 } from './query'
 import { TransactionClass } from "./transactions"

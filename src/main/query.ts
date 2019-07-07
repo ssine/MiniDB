@@ -31,7 +31,7 @@ function get_table(data: SystemData, clause: TableName): Table {
   return data.dbs[db].tables[clause.table];
 }
 
-function ql_insert(data: SystemData, tree: Insert): string {
+function ql_insert(data: SystemData, tree: Insert, txID: number): string {
   let tb = get_table(data, tree);
 
   let val: (string|number)[][] = [];
@@ -40,7 +40,7 @@ function ql_insert(data: SystemData, tree: Insert): string {
   });
 
   let dbName = tree.database ? tree.database : data.cur_db;
-  let iter = new table_insert(dbName, tb, val);
+  let iter = new table_insert(dbName, txID, tb, val);
   let cnt = 0;
 
   while (iter.get_next()) cnt++;
@@ -49,11 +49,11 @@ function ql_insert(data: SystemData, tree: Insert): string {
   return cnt + ' tuples inserted.';
 }
 
-function ql_delete(data: SystemData, tree: Delete): string {
+function ql_delete(data: SystemData, tree: Delete, txID: number): string {
   let tb = get_table(data, tree);
 
   let dbName = tree.database ? tree.database : data.cur_db;
-  let iter = new table_delete(dbName, tb, tree.where);
+  let iter = new table_delete(dbName, txID, tb, tree.where);
   let cnt = 0;
 
   while (iter.get_next()) cnt++;
@@ -62,14 +62,14 @@ function ql_delete(data: SystemData, tree: Delete): string {
   return cnt + ' tuples deleted.';
 }
 
-function ql_update(data: SystemData, tree: Update): string {
+function ql_update(data: SystemData, tree: Update, txID: number): string {
   let tb = get_table(data, tree);
 
   let cols:string[] = [], set_to = [];
   tree.set.forEach(el => {cols.push(el.column); set_to.push(el.expr.data)});
 
   let dbName = tree.database ? tree.database : data.cur_db;
-  let iter = new table_update(dbName, tb, cols, set_to, tree.where);
+  let iter = new table_update(dbName, txID, tb, cols, set_to, tree.where);
   let cnt = 0;
 
   while (iter.get_next()) cnt++;
@@ -112,53 +112,53 @@ function ql_select(data: SystemData, tree: Select): string {
   return scanner_to_string(iter);
 }
 
-function ql_transaction(sys_data: SystemData, tree: Transaction, response): string {
-  let res = '';
-  let check_res: boolean, check_err: string;
+// function ql_transaction(sys_data: SystemData, tree: Transaction, response): string {
+//   let res = '';
+//   let check_res: boolean, check_err: string;
 
-  tree.contents.forEach(stmt_tree => {
-    // Process all the SQL parse trees.
+//   tree.contents.forEach(stmt_tree => {
+//     // Process all the SQL parse trees.
 
-    if (!stmt_tree) return '';
+//     if (!stmt_tree) return '';
 
-    // Perform semantic checking.
-    [check_res, check_err] = ql_check(sys_data, stmt_tree);
-    if (!check_res) {
-      res += check_err + '\r\nsemantic check failed!\r\n';
-      return;
-    }
+//     // Perform semantic checking.
+//     [check_res, check_err] = ql_check(sys_data, stmt_tree);
+//     if (!check_res) {
+//       res += check_err + '\r\nsemantic check failed!\r\n';
+//       return;
+//     }
 
-    switch (stmt_tree.statement) {
-      case 'CREATE TABLE':
-        res += create_table(sys_data, stmt_tree);
-        break;
-      case 'DROP TABLE':
-        res += drop_table(sys_data, stmt_tree);
-        break;
-      // case 'CREATE INDEX':
-      // case 'DROP INDEX':
-      case 'SELECT':
-        res += ql_select(sys_data, stmt_tree);
-        break;
-      case 'INSERT':
-        res += ql_insert(sys_data, stmt_tree);
-        break;
-      case 'DELETE':
-        res += ql_delete(sys_data, stmt_tree);
-        break;
-      case 'UPDATE':
-        res += ql_update(sys_data, stmt_tree);
-        break;
-      case 'TRANSACTION':
-        res += ql_transaction(sys_data, stmt_tree, response);
-        break;
-      default:
-        res += 'Action not yet implemented.\r\n';
-        break;
-    }
-  })
-  return res;
-}
+//     switch (stmt_tree.statement) {
+//       case 'CREATE TABLE':
+//         res += create_table(sys_data, stmt_tree);
+//         break;
+//       case 'DROP TABLE':
+//         res += drop_table(sys_data, stmt_tree);
+//         break;
+//       // case 'CREATE INDEX':
+//       // case 'DROP INDEX':
+//       case 'SELECT':
+//         res += ql_select(sys_data, stmt_tree);
+//         break;
+//       case 'INSERT':
+//         res += ql_insert(sys_data, stmt_tree);
+//         break;
+//       case 'DELETE':
+//         res += ql_delete(sys_data, stmt_tree);
+//         break;
+//       case 'UPDATE':
+//         res += ql_update(sys_data, stmt_tree);
+//         break;
+//       case 'TRANSACTION':
+//         res += ql_transaction(sys_data, stmt_tree, response);
+//         break;
+//       default:
+//         res += 'Action not yet implemented.\r\n';
+//         break;
+//     }
+//   })
+//   return res;
+// }
 
 function scanner_to_string(sc: Scanner): string {
   function char_repeat(c: string, n: number): string {
@@ -368,6 +368,5 @@ export {
   ql_delete,
   ql_update,
   ql_select,
-  ql_transaction,
   ql_check
 };

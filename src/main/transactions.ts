@@ -13,15 +13,19 @@ import {
     set_panel_on,
     create_table,
     drop_table
-  } from './manager'
-  import {
+} from './manager'
+import {
     ql_insert,
     ql_delete,
     ql_update,
     ql_select,
-    ql_transaction,
     ql_check
-  } from './query'
+} from './query'
+import {
+    BeginTxLog,
+    CommitTxLog,
+    writeLog
+} from './log'
 class TransactionClass 
 {
     content: Trees;
@@ -29,6 +33,8 @@ class TransactionClass
     res: string;
     response;
     sys_data: SystemData;
+    txID: number;
+
     constructor(content: Trees, response, sys_data: SystemData) {
         this.content = content;
         console.log(this.content.length);
@@ -36,10 +42,14 @@ class TransactionClass
         this.sys_data = sys_data;
         this.cur_query_index = 0;
         this.res = '';
+        this.txID = sys_data.tx_cnt++;
         this.start()
         console.log('Transaction Init')
     }
     start() {
+        //write ahead log
+        let beginTxLog = new BeginTxLog(this.txID);
+        writeLog(beginTxLog);
         setTimeout(this.process_query.bind(this), 0);
     }
     process_query() {
@@ -69,16 +79,13 @@ class TransactionClass
             query_res += ql_select(this.sys_data, stmt_tree);
             break;
         case 'INSERT':
-            query_res += ql_insert(this.sys_data, stmt_tree);
+            query_res += ql_insert(this.sys_data, stmt_tree, this.txID);
             break;
         case 'DELETE':
-            query_res += ql_delete(this.sys_data, stmt_tree);
+            query_res += ql_delete(this.sys_data, stmt_tree, this.txID);
             break;
         case 'UPDATE':
-            query_res += ql_update(this.sys_data, stmt_tree);
-            break;
-        case 'TRANSACTION':
-            query_res += ql_transaction(this.sys_data, stmt_tree, this.response);
+            query_res += ql_update(this.sys_data, stmt_tree, this.txID);
             break;
         default:
             query_res += 'Action not yet implemented.\r\n';
@@ -93,6 +100,9 @@ class TransactionClass
         this.cur_query_index++;
         this.res += query_res;
         if(this.cur_query_index == this.content.length) {
+            //write ahead log
+            let commitTxLog = new CommitTxLog(this.txID);
+            writeLog(commitTxLog);
             this.response.send(this.res);
         } else {
             setTimeout(this.process_query, 0);       

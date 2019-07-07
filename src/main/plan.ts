@@ -43,12 +43,14 @@ import { emitter } from './emitter'
 
 class table_insert {
   dbName: string;
+  txID: number;
   table: Table;
   rows: any[][];
   pos: number;
 
-  constructor(dbName: string, table: Table, rows: any[][]) {
+  constructor(dbName: string, txID: number, table: Table, rows: any[][]) {
     this.dbName = dbName;
+    this.txID = txID;
     this.table = table;
     this.rows = rows;
     this.pos = 0;
@@ -57,8 +59,7 @@ class table_insert {
   get_next():boolean {
     if (this.pos < this.rows.length) {
       //write ahead log
-      //FIXME: replace mocked transaction ID
-      let insertLog = new InsertLog(111, this.dbName, this.table.name, this.rows[this.pos]);
+      let insertLog = new InsertLog(this.txID, this.dbName, this.table.name, this.rows[this.pos]);
       writeLog(insertLog);
 
       this.table.data.push(this.rows[this.pos++]);
@@ -78,12 +79,14 @@ class table_insert {
 
 class table_delete {
   dbName: string;
+  txID: number;
   table: Table;
   where: (pos: number) => boolean;
   pos: number;
 
-  constructor(dbName: string, table: Table, where?: Expression) {
+  constructor(dbName: string, txID: number, table: Table, where?: Expression) {
     this.dbName = dbName;
+    this.txID = txID;
     this.table = table;
     this.pos = 0;
     if (where) this.where = pos =>
@@ -95,8 +98,7 @@ class table_delete {
     while (this.pos < this.table.data.length) {
       if (this.where(this.pos)) {
         //write ahead log
-        //FIXME: replace mocked transaction ID
-        let deleteLog = new DeleteLog(222, this.dbName, this.table.name, this.pos, this.table.data[this.pos]);
+        let deleteLog = new DeleteLog(this.txID, this.dbName, this.table.name, this.pos, this.table.data[this.pos]);
         writeLog(deleteLog);
 
         this.table.data.splice(this.pos, 1);
@@ -111,14 +113,16 @@ class table_delete {
 
 class table_update {
   dbName: string;
+  txID: number;
   table: Table;
   cols: string[];
   set_to: any;
   where: (pos: number) => boolean;
   pos: number;
 
-  constructor(dbName:string, table: Table, cols: string[], set_to: (number|string)[], where?: Expression) {
+  constructor(dbName:string, txID: number, table: Table, cols: string[], set_to: (number|string)[], where?: Expression) {
     this.dbName = dbName;
+    this.txID = txID;
     this.table = table;
     this.cols = cols;
     this.set_to = set_to;
@@ -135,8 +139,7 @@ class table_update {
           //write ahead log
           let updateFrom = this.table.data[this.pos][this.table.col_name.indexOf(col)];
           let updateTo = this.set_to[idx];
-          //FIXME: replace mocked transaction ID
-          let updateLog = new UpdateLog(333, this.dbName, this.table.name, this.pos, col, updateFrom, updateTo);
+          let updateLog = new UpdateLog(this.txID, this.dbName, this.table.name, this.pos, col, updateFrom, updateTo);
           writeLog(updateLog);
 
           this.table.data[this.pos][this.table.col_name.indexOf(col)] = this.set_to[idx];
