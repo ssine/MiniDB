@@ -48,3 +48,5 @@
 {"timestamp":"2019/7/10 上午1:07:17","operation":"BEGIN TRANSACTION","transactionID":0}
 {"timestamp":"2019/7/10 上午1:07:17","operation":"UPDATE","transactionID":0,"database":"bank_db","table":"bank","row":0,"column":"name","updateFrom":"bank of china","updateTo":"abc"}
 {"timestamp":"2019/7/10 上午1:07:17","operation":"COMMIT TRANSACTION","transactionID":0}
+{"timestamp":"2019/7/10 上午2:46:39","operation":"BEGIN TRANSACTION","transactionID":0}
+{"timestamp":"2019/7/10 上午2:46:39","operation":"COMMIT TRANSACTION","transactionID":0}
