@@ -99,6 +99,8 @@ class TransactionClass
                         }
                     }
                     break;
+                case 'CREATE TABLE':
+                    break;
                 default:
                     let tb = get_table(this.sys_data, stmt_tree);
                     // If write or read lock has been required by other tx,
