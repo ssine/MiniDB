@@ -24,6 +24,16 @@ function load_data(): SystemData {
   }
 }
 
+function init_locks(data: SystemData) {
+  let db_i;
+  for(db_i in data.dbs) {
+    let tb_i;
+    for(tb_i in data.dbs[db_i].tables) {
+      data.dbs[db_i].tables[tb_i].w_lock_owner = -1;
+      data.dbs[db_i].tables[tb_i].r_lock_owner = -1;
+    }
+  }
+}
 /**
  * Save system data to the given path.
  */
@@ -99,4 +109,4 @@ function new_window() {
   });
 }
 
-export { load_data, save_data, plot_plan, show_panel, new_window };
+export { init_locks, load_data, save_data, plot_plan, show_panel, new_window };

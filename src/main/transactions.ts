@@ -2,7 +2,7 @@
 import * as bodyParser from "body-parser"
 import * as express from "express"
 import { Table, Database, SystemData } from "./data";
-import { Trees } from "../parser";
+import { Trees, Tree } from "../parser";
 import {
     create_database,
     drop_database,
@@ -19,13 +19,16 @@ import {
     ql_delete,
     ql_update,
     ql_select,
-    ql_check
+    ql_check,
+    get_table
 } from './query'
 import {
     BeginTxLog,
     CommitTxLog,
     writeLog
 } from './log'
+import { getType } from "mime";
+import { readlink } from "fs";
 class TransactionClass 
 {
     content: Trees;
@@ -34,7 +37,8 @@ class TransactionClass
     response;
     sys_data: SystemData;
     txID: number;
-
+    r_locks: Table[];
+    w_locks: Table[];
     constructor(content: Trees, response, sys_data: SystemData) {
         this.content = content;
         console.log(this.content.length);
@@ -43,8 +47,77 @@ class TransactionClass
         this.cur_query_index = 0;
         this.res = '';
         this.txID = sys_data.tx_cnt++;
-        this.start()
+        this.r_locks = [];
+        this.w_locks = [];
+        if(this.check_semantic()) {
+            setTimeout(this.require_locks.bind(this), 0);
+        }
         console.log('Transaction Init')
+    }
+    check_semantic() {
+        let check_res: boolean, check_err: string;
+        let stmt_tree: Tree;
+        let tree_i;
+        // Process all the SQL parse trees.
+        for(tree_i in this.content) {
+            stmt_tree = this.content[tree_i];
+            if (!stmt_tree) {
+                this.response.send('');
+                return false;
+            }
+            // Perform semantic checking.
+            [check_res, check_err] = ql_check(this.sys_data, stmt_tree);
+            if (!check_res) {
+                this.response.send(check_err + '\r\nsemantic check failed!\r\n');
+                return false;
+            } 
+        }
+        return true;
+    }
+    require_locks() {
+        let stmt_tree: Tree;
+        let tree_i;
+        for(tree_i in this.content) {
+            stmt_tree = this.content[tree_i];
+            switch (stmt_tree.statement) {
+                case 'SELECT':  
+                    let i;
+                    for(i in stmt_tree.selects[0].from) {
+                        let tb = get_table(this.sys_data, stmt_tree.selects[0].from[i]);
+                        // If write lock has been required by other tx,
+                        // clear lock_queue and restart requiring locks
+                        if(tb.w_lock_owner != this.txID && tb.w_lock_owner >= 0) {
+                            this.clear_lock_queue();
+                            setTimeout(this.require_locks.bind(this), 0);
+                            return;
+                        } else {
+                            this.r_locks.push(tb);
+                        }
+                    }
+                    break;
+                default:
+                    let tb = get_table(this.sys_data, stmt_tree);
+                    // If write or read lock has been required by other tx,
+                    // clear lock_queue and restart requiring locks
+                    if((tb.w_lock_owner != this.txID && tb.w_lock_owner >= 0)
+                        || (tb.r_lock_owner != this.txID && tb.r_lock_owner >= 0)) {
+                        this.clear_lock_queue();
+                        setTimeout(this.require_locks.bind(this), 0);
+                        return;
+                    } else {
+                        this.w_locks.push(tb);
+                    }
+                    break;
+            }
+        }
+        let tb_i;
+        for(tb_i in this.r_locks) {
+            this.r_locks[tb_i].r_lock_owner = this.txID;
+        }
+        for(tb_i in this.w_locks) {
+            this.w_locks[tb_i].w_lock_owner = this.txID;
+        }
+        this.start()
     }
     start() {
         //write ahead log
@@ -53,20 +126,26 @@ class TransactionClass
         setTimeout(this.process_query.bind(this), 0);
         this.sys_data.runningTxs.push(this.txID);
     }
+    clear_lock_queue() {
+        this.r_locks = []
+        this.w_locks = []
+    }
+    release_locks() {
+        let tb_i;
+        for(tb_i in this.r_locks) {
+            this.r_locks[tb_i].r_lock_owner = -1;
+        }
+        for(tb_i in this.w_locks) {
+            this.w_locks[tb_i].w_lock_owner = -1;
+        }
+        this.clear_lock_queue()
+    }
     process_query() {
         console.log(this.content.length);
         let stmt_tree = this.content[this.cur_query_index];
-        let check_res: boolean, check_err: string;
         let query_res: string = '';
     
-        // Process all the SQL parse trees.
-        if (!stmt_tree) return '';
-        // Perform semantic checking.
-        [check_res, check_err] = ql_check(this.sys_data, stmt_tree);
-        if (!check_res) {
-            query_res += check_err + '\r\nsemantic check failed!\r\n';
-            return query_res;
-        }
+        
         switch (stmt_tree.statement) {
         case 'CREATE TABLE':
             query_res += create_table(this.sys_data, stmt_tree);
@@ -100,82 +179,22 @@ class TransactionClass
         }
         this.cur_query_index++;
         this.res += query_res;
+        // commit
         if(this.cur_query_index == this.content.length) {
-            //write ahead log
+            // write ahead log
             let commitTxLog = new CommitTxLog(this.txID);
             writeLog(commitTxLog);
             this.response.send(this.res);
             
             let idx = this.sys_data.runningTxs.indexOf(this.txID);
             this.sys_data.runningTxs.splice(idx,1);
+            this.release_locks();
         } else {
-            setTimeout(this.process_query, 0);       
+            // next query
+            setTimeout(this.process_query.bind(this), 0);       
         }
     }
     
 }
 export { TransactionClass };
-
-
-//Lock dictionary
-// Table name as key
-let read_locks = {};
-let write_locks = {};
-function lock_r(table_name: string) {
-    read_locks[table_name] = true;
-}
-
-function unlock_r(table_name: string) {
-    read_locks[table_name] = true;
-}
-
-function destroy_lock_r(table_name: string) {
-    delete read_locks[table_name];
-}
-
-function is_locked_r(table_name: string):boolean {
-    if(read_locks[table_name] == true) {
-        return true;
-    } else {
-        return false; 
-    }
-}
-
-function lock_w(table_name: string) {
-    write_locks[table_name] = true;
-}
-
-function unlock_w(table_name: string) {
-    write_locks[table_name] = true;
-}
-
-function destroy_lock_w(table_name: string) {
-    delete write_locks[table_name];
-}
-
-function is_locked_w(table_name: string):boolean {
-    if(write_locks[table_name] == true) {
-        return true;
-    } else {
-        return false; 
-    }
-}
-
-function aquire_r_lock(table_name: string) {
-    if(is_locked_w[table_name] == true) {
-        return false;
-    } else {
-        return true;
-    }
-}
-
-function aquire_w_lock(table_name: string) {
-    if(is_locked_w[table_name] == true ||
-         is_locked_r[table_name] == true) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
 

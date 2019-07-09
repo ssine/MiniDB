@@ -59,7 +59,7 @@ app.on("activate", () => {
 import { parser, Trees, Tree } from '../parser'
 import { SystemData } from './data'
 import * as fs from 'fs'
-import { load_data, save_data, new_window } from './utls'
+import { load_data, save_data, new_window, init_locks } from './utls'
 import {
   create_database,
   drop_database,
@@ -85,6 +85,8 @@ import {recoverByLog} from './log'
 // Load the persisted data, 
 let sys_data: SystemData = load_data();
 
+// Init locks
+init_locks(sys_data);
 // When a command line input arrives, process it and return the result.
 // ipcMain.on('command-line', (event, arg) => {
 //   event.returnValue = process_input(arg);

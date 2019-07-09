@@ -95,7 +95,8 @@ interface Update {
 }
 
 interface Transaction {
-  statement: 'TRANSACTION'
+  statement: 'TRANSACTION',
+  table: string,
   contents: Trees;
 }
 
