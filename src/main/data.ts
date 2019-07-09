@@ -23,6 +23,7 @@ class SystemData {
   show_plan: boolean;
   panel_on: boolean;
   tx_cnt: number;
+  debug: boolean;
 }
 
 export { Table, Database, SystemData };

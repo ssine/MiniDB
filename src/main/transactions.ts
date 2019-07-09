@@ -41,7 +41,6 @@ class TransactionClass
     w_locks: Table[];
     constructor(content: Trees, response, sys_data: SystemData) {
         this.content = content;
-        console.log(this.content.length);
         this.response = response;
         this.sys_data = sys_data;
         this.cur_query_index = 0;
@@ -49,10 +48,11 @@ class TransactionClass
         this.txID = sys_data.tx_cnt++;
         this.r_locks = [];
         this.w_locks = [];
+        console.log('Transaction ' + this.txID + ' Init')
         if(this.check_semantic()) {
+            console.log('Transaction ' + this.txID + ' Start requiring locks')
             setTimeout(this.require_locks.bind(this), 0);
         }
-        console.log('Transaction Init')
     }
     check_semantic() {
         let check_res: boolean, check_err: string;
@@ -121,9 +121,10 @@ class TransactionClass
     }
     start() {
         //write ahead log
+        console.log('Transaction ' + this.txID + ' Locks required')        
         let beginTxLog = new BeginTxLog(this.txID);
         writeLog(beginTxLog);
-        setTimeout(this.process_query.bind(this), 0);
+        setTimeout(this.process_query.bind(this), this.sys_data.debug?5000:0);
     }
     clear_lock_queue() {
         this.r_locks = []
@@ -140,11 +141,9 @@ class TransactionClass
         this.clear_lock_queue()
     }
     process_query() {
-        console.log(this.content.length);
         let stmt_tree = this.content[this.cur_query_index];
         let query_res: string = '';
     
-        
         switch (stmt_tree.statement) {
         case 'CREATE TABLE':
             query_res += create_table(this.sys_data, stmt_tree);
@@ -180,6 +179,7 @@ class TransactionClass
         this.res += query_res;
         // commit
         if(this.cur_query_index == this.content.length) {
+            console.log('Transaction ' + this.txID + ' Committed')
             // write ahead log
             let commitTxLog = new CommitTxLog(this.txID);
             writeLog(commitTxLog);
@@ -187,7 +187,7 @@ class TransactionClass
             this.release_locks();
         } else {
             // next query
-            setTimeout(this.process_query.bind(this), 0);       
+            setTimeout(this.process_query.bind(this), this.sys_data.debug?5000:0);       
         }
     }
     

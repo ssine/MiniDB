@@ -99,7 +99,7 @@ webapp.post('/', function(request, response) {
   let arg: string = request.body.content;
   // console.log(arg);
   let process_res = process_input(arg, response);
-  console.log('***result: '+process_res);
+  // console.log('***result: '+process_res);
   if(process_res != 'do not send') {
     response.send(process_res);
   }
@@ -145,6 +145,12 @@ function process_input(input: string, response): string {
         } catch (err) {
           res = 'file not exists.';
         }
+        break;
+      case 'debug_on':
+        sys_data.debug = true;
+        break;
+      case 'debug_off':
+        sys_data.debug = false;
         break;
       case 'createdb':
         res = create_database(sys_data, input.split(' ')[1]);

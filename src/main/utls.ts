@@ -18,6 +18,8 @@ function load_data(path: string): SystemData {
     console.log('Data not exists, will be saved after exit.');
     let dt = new SystemData();
     dt.dbs = {};
+    dt.debug = false;
+    dt.tx_cnt = 0;
     return dt;
   }
 }
