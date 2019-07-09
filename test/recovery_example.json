@@ -1,0 +1,7 @@
+{"timestamp":"2019/7/10 上午2:43:39","operation":"BEGIN TRANSACTION","transactionID":0}
+{"timestamp":"2019/7/10 上午2:43:41","operation":"BEGIN TRANSACTION","transactionID":1}
+{"timestamp":"2019/7/10 上午2:43:44","operation":"INSERT","transactionID":0,"database":"bank_db","table":"account","value":[3,"zzzp"]}
+{"timestamp":"2019/7/10 上午2:43:46","operation":"UPDATE","transactionID":1,"database":"bank_db","table":"deposit","row":5,"column":"balance","updateFrom":1234,"updateTo":6000}
+{"timestamp":"2019/7/10 上午2:43:49","operation":"CHECKPOINT","runningTransactions":[0,1]}
+{"timestamp":"2019/7/10 上午2:43:51","operation":"DELETE","transactionID":0,"database":"bank_db","table":"account","row":0,"value":[1,"sine"]}
+{"timestamp":"2019/7/10 上午2:43:52","operation":"COMMIT TRANSACTION","transactionID":0}
