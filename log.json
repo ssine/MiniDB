@@ -41,3 +41,5 @@
 {"timestamp":"2019/7/9 下午7:00:36","operation":"INSERT","transactionID":0,"database":"bank_db","table":"account","value":[3,"zzzp"]}
 
 >>>>>>> e22fd61e5e89d38429576a8b57c4f5a295e0fa12
+{"timestamp":"2019/7/9 下午11:28:54","operation":"BEGIN TRANSACTION","transactionID":0}
+{"timestamp":"2019/7/9 下午11:28:54","operation":"COMMIT TRANSACTION","transactionID":0}
