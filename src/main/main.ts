@@ -215,7 +215,7 @@ function run_sql(input: string, response): string {
   try {
     trees = parser.parse(input);
   } catch (err) {
-    // console.log('parse error');
+    console.log(err);
     return 'parse error.';
   }
 
