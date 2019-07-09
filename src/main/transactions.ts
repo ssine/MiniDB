@@ -125,6 +125,7 @@ class TransactionClass
         let beginTxLog = new BeginTxLog(this.txID);
         writeLog(beginTxLog);
         setTimeout(this.process_query.bind(this), this.sys_data.debug?5000:0);
+        this.sys_data.runningTxs.push(this.txID);
     }
     clear_lock_queue() {
         this.r_locks = []
@@ -184,6 +185,9 @@ class TransactionClass
             let commitTxLog = new CommitTxLog(this.txID);
             writeLog(commitTxLog);
             this.response.send(this.res);
+            
+            let idx = this.sys_data.runningTxs.indexOf(this.txID);
+            this.sys_data.runningTxs.splice(idx,1);
             this.release_locks();
         } else {
             // next query

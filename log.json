@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {"timestamp":"2019/7/8 上午12:07:27","operation":"BEGIN TRANSACTION","transactionID":0}
 {"timestamp":"2019/7/8 上午12:07:27","operation":"INSERT","transactionID":0,"database":"bank_db","table":"account","value":[1,"zz"]}
 {"timestamp":"2019/7/8 上午12:07:27","operation":"COMMIT TRANSACTION","transactionID":0}
@@ -34,3 +35,9 @@
 {"timestamp":"2019/7/9 下午11:20:47","operation":"BEGIN TRANSACTION","transactionID":3}
 {"timestamp":"2019/7/9 下午11:20:52","operation":"INSERT","transactionID":3,"database":"bank_db","table":"bank","value":[7,"bank of syh"]}
 {"timestamp":"2019/7/9 下午11:20:52","operation":"COMMIT TRANSACTION","transactionID":3}
+=======
+{"timestamp":"2019/7/9 下午6:46:43","operation":"CHECKPOINT","runningTransactions":[]}
+{"timestamp":"2019/7/9 下午7:00:36","operation":"BEGIN TRANSACTION","transactionID":0}
+{"timestamp":"2019/7/9 下午7:00:36","operation":"INSERT","transactionID":0,"database":"bank_db","table":"account","value":[3,"zzzp"]}
+
+>>>>>>> e22fd61e5e89d38429576a8b57c4f5a295e0fa12

@@ -23,7 +23,11 @@ class SystemData {
   show_plan: boolean;
   panel_on: boolean;
   tx_cnt: number;
+<<<<<<< HEAD
   debug: boolean;
+=======
+  runningTxs: number[];
+>>>>>>> e22fd61e5e89d38429576a8b57c4f5a295e0fa12
 }
 
 export { Table, Database, SystemData };

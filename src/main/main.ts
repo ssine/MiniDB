@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain, Menu } from "electron";
 import * as path from "path";
 import * as bodyParser from "body-parser"
 import * as express from "express"
+
 let mainWindow: Electron.BrowserWindow;
 
 function createWindow() {
@@ -79,10 +80,10 @@ import {
 } from './query'
 import { TransactionClass } from "./transactions"
 import { request } from "https";
-let data_path = './data.json';
+import {recoverByLog} from './log'
 
 // Load the persisted data, 
-let sys_data: SystemData = load_data(data_path);
+let sys_data: SystemData = load_data();
 
 // Init locks
 init_locks(sys_data);
@@ -127,12 +128,16 @@ function process_input(input: string, response): string {
         res = '';
         break;
       case 'savedata':
-        save_data(data_path, sys_data);
+        save_data(sys_data);
         res = '';
+        break;
+      case 'recover':
+        recoverByLog(sys_data);
+        res = 'recovered';
         break;
       case 'exit':
         // Save data and quit the app.
-        save_data(data_path, sys_data);
+        save_data(sys_data);
         app.quit();
         res = '';
         break;
@@ -175,6 +180,9 @@ function process_input(input: string, response): string {
         break;
       case 'showpanel':
         res = set_panel_on(sys_data);
+        break;
+      case 'rawdata':
+        res = JSON.stringify(sys_data);
         break;
     }
     return res;
