@@ -175,6 +175,9 @@ function process_input(input: string, response): string {
       case 'showpanel':
         res = set_panel_on(sys_data);
         break;
+      case 'rawdata':
+        res = JSON.stringify(sys_data);
+        break;
     }
     return res;
   } else {
