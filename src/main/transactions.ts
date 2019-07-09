@@ -158,9 +158,7 @@ class TransactionClass
     
         switch (stmt_tree.statement) {
         case 'CREATE TABLE':
-            console.log('creating table')
-            query_res += create_table(this.sys_data, stmt_tree);
-            console.log('created table')
+            query_res += create_table(this.sys_data, stmt_tree) + '\r';
             break;
         case 'DROP TABLE':
             query_res += drop_table(this.sys_data, stmt_tree);
@@ -171,7 +169,7 @@ class TransactionClass
             query_res += ql_select(this.sys_data, stmt_tree);
             break;
         case 'INSERT':
-            query_res += ql_insert(this.sys_data, stmt_tree, this.txID);
+            query_res += ql_insert(this.sys_data, stmt_tree, this.txID) + '\r';
             break;
         case 'DELETE':
             query_res += ql_delete(this.sys_data, stmt_tree, this.txID);

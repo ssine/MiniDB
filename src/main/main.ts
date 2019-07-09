@@ -145,10 +145,10 @@ function process_input(input: string, response): string {
         // Use the file as input SQL.
         let filename = input.substr(4).trim();
         try {
-          input = fs.readFileSync(path.join(__dirname, filename)).toString();
+          input = fs.readFileSync(path.resolve(__dirname, filename)).toString();
           res = run_sql(input, response);
         } catch (err) {
-          res = 'file not exists.';
+          res = err.toString();
         }
         break;
       case 'debug_on':
