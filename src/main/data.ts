@@ -6,6 +6,8 @@ class Table {
   name: string;
   col_name: string[];
   col_id: string[];
+  r_lock_owner: number;
+  w_lock_owner: number;
   types: ('number'|'string'|'date')[];
   data: any[][];
 }

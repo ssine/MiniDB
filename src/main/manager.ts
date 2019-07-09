@@ -109,6 +109,8 @@ function create_table(data: SystemData, tree: Create): string {
   tb.col_id = [];
   tb.types = [];
   tb.data = [];
+  tb.r_lock_owner = -1;
+  tb.w_lock_owner = -1;
   if (tree.column_defs) {
     tree.column_defs.forEach(col => {
       tb.col_name.push(col.column);

@@ -368,5 +368,6 @@ export {
   ql_delete,
   ql_update,
   ql_select,
-  ql_check
+  ql_check,
+  get_table
 };

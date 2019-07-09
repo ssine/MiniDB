@@ -1,3 +1,19 @@
 {"timestamp":"2019/7/8 上午12:07:27","operation":"BEGIN TRANSACTION","transactionID":0}
 {"timestamp":"2019/7/8 上午12:07:27","operation":"INSERT","transactionID":0,"database":"bank_db","table":"account","value":[1,"zz"]}
 {"timestamp":"2019/7/8 上午12:07:27","operation":"COMMIT TRANSACTION","transactionID":0}
+{"timestamp":"2019/7/9 上午3:34:23","operation":"BEGIN TRANSACTION","transactionID":0}
+{"timestamp":"2019/7/9 上午3:34:23","operation":"COMMIT TRANSACTION","transactionID":0}
+{"timestamp":"2019/7/9 上午3:43:01","operation":"BEGIN TRANSACTION","transactionID":1}
+{"timestamp":"2019/7/9 上午3:43:01","operation":"COMMIT TRANSACTION","transactionID":1}
+{"timestamp":"2019/7/9 下午4:12:08","operation":"BEGIN TRANSACTION","transactionID":0}
+{"timestamp":"2019/7/9 下午4:12:08","operation":"COMMIT TRANSACTION","transactionID":0}
+{"timestamp":"2019/7/9 下午4:13:40","operation":"BEGIN TRANSACTION","transactionID":1}
+{"timestamp":"2019/7/9 下午4:13:40","operation":"COMMIT TRANSACTION","transactionID":1}
+{"timestamp":"2019/7/9 下午4:56:11","operation":"BEGIN TRANSACTION","transactionID":2}
+{"timestamp":"2019/7/9 下午4:56:11","operation":"INSERT","transactionID":2,"database":"bank_db","table":"bank","value":[1,"bank of lsy"]}
+{"timestamp":"2019/7/9 下午4:56:11","operation":"COMMIT TRANSACTION","transactionID":2}
+{"timestamp":"2019/7/9 下午4:56:15","operation":"BEGIN TRANSACTION","transactionID":3}
+{"timestamp":"2019/7/9 下午4:56:15","operation":"COMMIT TRANSACTION","transactionID":3}
+{"timestamp":"2019/7/9 下午5:40:11","operation":"BEGIN TRANSACTION","transactionID":4}
+{"timestamp":"2019/7/9 下午5:40:11","operation":"INSERT","transactionID":4,"database":"bank_db","table":"bank","value":[6,"bank of zp"]}
+{"timestamp":"2019/7/9 下午5:40:11","operation":"COMMIT TRANSACTION","transactionID":4}
