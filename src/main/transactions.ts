@@ -68,6 +68,10 @@ class TransactionClass
                 this.response.send('');
                 return false;
             }
+            if (stmt_tree.statement == 'CREATE TABLE') {
+                create_table(this.sys_data, stmt_tree);
+                continue;
+            }
             // Perform semantic checking.
             [check_res, check_err] = ql_check(this.sys_data, stmt_tree);
             if (!check_res) {
@@ -154,7 +158,9 @@ class TransactionClass
     
         switch (stmt_tree.statement) {
         case 'CREATE TABLE':
+            console.log('creating table')
             query_res += create_table(this.sys_data, stmt_tree);
+            console.log('created table')
             break;
         case 'DROP TABLE':
             query_res += drop_table(this.sys_data, stmt_tree);

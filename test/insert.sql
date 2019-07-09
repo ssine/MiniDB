@@ -1,3 +1,5 @@
+BEGIN;
+
 CREATE TABLE bank (
     bank_id number,
     name    string
@@ -35,3 +37,5 @@ INSERT INTO deposit VALUES
     (2, 1, 5000),
     (2, 4, 6000)
 ;
+
+COMMIT;
