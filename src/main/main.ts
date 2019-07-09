@@ -230,11 +230,11 @@ function run_sql(input: string, response): string {
     if (!tree) return '';
 
     // Perform semantic checking.
-    [check_res, check_err] = ql_check(sys_data, tree);
-    if (!check_res) {
-      res += check_err + '\r\nsemantic check failed!\r\n';
-      return res;
-    }
+    // [check_res, check_err] = ql_check(sys_data, tree);
+    // if (!check_res) {
+    //   res += check_err + '\r\nsemantic check failed!\r\n';
+    //   return res;
+    // } 
 
     switch (tree.statement) {
       case 'CREATE TABLE':

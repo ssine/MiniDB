@@ -43,3 +43,8 @@
 >>>>>>> e22fd61e5e89d38429576a8b57c4f5a295e0fa12
 {"timestamp":"2019/7/9 下午11:28:54","operation":"BEGIN TRANSACTION","transactionID":0}
 {"timestamp":"2019/7/9 下午11:28:54","operation":"COMMIT TRANSACTION","transactionID":0}
+{"timestamp":"2019/7/10 上午12:56:52","operation":"BEGIN TRANSACTION","transactionID":1}
+{"timestamp":"2019/7/10 上午12:56:52","operation":"COMMIT TRANSACTION","transactionID":1}
+{"timestamp":"2019/7/10 上午1:07:17","operation":"BEGIN TRANSACTION","transactionID":0}
+{"timestamp":"2019/7/10 上午1:07:17","operation":"UPDATE","transactionID":0,"database":"bank_db","table":"bank","row":0,"column":"name","updateFrom":"bank of china","updateTo":"abc"}
+{"timestamp":"2019/7/10 上午1:07:17","operation":"COMMIT TRANSACTION","transactionID":0}
