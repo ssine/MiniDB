@@ -21,6 +21,7 @@ class SystemData {
   show_plan: boolean;
   panel_on: boolean;
   tx_cnt: number;
+  runningTxs: number[];
 }
 
 export { Table, Database, SystemData };

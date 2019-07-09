@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain, Menu } from "electron";
 import * as path from "path";
 import * as bodyParser from "body-parser"
 import * as express from "express"
+
 let mainWindow: Electron.BrowserWindow;
 
 function createWindow() {
@@ -79,12 +80,10 @@ import {
 } from './query'
 import { TransactionClass } from "./transactions"
 import { request } from "https";
-let data_path = './data.json';
+import {recoverByLog} from './log'
 
 // Load the persisted data, 
-let sys_data: SystemData = load_data(data_path);
-
-
+let sys_data: SystemData = load_data();
 
 // When a command line input arrives, process it and return the result.
 // ipcMain.on('command-line', (event, arg) => {
@@ -127,12 +126,16 @@ function process_input(input: string, response): string {
         res = '';
         break;
       case 'savedata':
-        save_data(data_path, sys_data);
+        save_data(sys_data);
         res = '';
+        break;
+      case 'recover':
+        recoverByLog(sys_data);
+        res = 'recovered';
         break;
       case 'exit':
         // Save data and quit the app.
-        save_data(data_path, sys_data);
+        save_data(sys_data);
         app.quit();
         res = '';
         break;

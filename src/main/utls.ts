@@ -6,12 +6,14 @@ import * as path from "path";
 import { emitter } from './emitter'
 import {CheckPoint, writeLog} from './log'
 
+let data_path = './data.json';
+
 /**
- * load system data from given path, create an empty one if not exist.
+ * load system data from pre-set path, create an empty one if not exist.
  */
-function load_data(path: string): SystemData {
+function load_data(): SystemData {
   try {
-    let data = fs.readFileSync(path).toString();
+    let data = fs.readFileSync(data_path).toString();
     console.log('Data exists, loading...');
     return JSON.parse(data.toString());
   } catch(error) {
@@ -25,10 +27,9 @@ function load_data(path: string): SystemData {
 /**
  * Save system data to the given path.
  */
-function save_data(path: string, data: SystemData): boolean {
-  fs.writeFileSync(path, JSON.stringify(data));
-  //FIXME: replace mocked running transactions
-  let checkpoint = new CheckPoint([111, 222]);
+function save_data(data: SystemData): boolean {
+  fs.writeFileSync(data_path, JSON.stringify(data));
+  let checkpoint = new CheckPoint(data.runningTxs);
   writeLog(checkpoint);
   console.log('Data file saved.');
   return true;

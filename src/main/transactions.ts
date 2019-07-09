@@ -51,6 +51,7 @@ class TransactionClass
         let beginTxLog = new BeginTxLog(this.txID);
         writeLog(beginTxLog);
         setTimeout(this.process_query.bind(this), 0);
+        this.sys_data.runningTxs.push(this.txID);
     }
     process_query() {
         console.log(this.content.length);
@@ -104,6 +105,9 @@ class TransactionClass
             let commitTxLog = new CommitTxLog(this.txID);
             writeLog(commitTxLog);
             this.response.send(this.res);
+            
+            let idx = this.sys_data.runningTxs.indexOf(this.txID);
+            this.sys_data.runningTxs.splice(idx,1);
         } else {
             setTimeout(this.process_query, 0);       
         }
