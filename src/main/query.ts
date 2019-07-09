@@ -188,7 +188,10 @@ function scanner_to_string(sc: Scanner): string {
   while (row = sc.get_next())
     rows.push(row);
   // console.log('rows: ', rows.toString());
-  
+  let result = col_id.toString()+'***'+rows.toString();
+  console.log('ids: ', col_id.toString());
+  console.log('rows: ', rows.toString());
+
   let res = '';
 
   // get lengths of each column
@@ -231,7 +234,8 @@ function scanner_to_string(sc: Scanner): string {
 
   print_hr();
 
-  return res + rows.length + ' tuples.\r\n';
+  return res + rows.length + ' tuples.\r\n' +'\t'+result;
+  //return res + rows.length + ' tuples.\r\n';
 }
 
 
