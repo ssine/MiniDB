@@ -57,6 +57,10 @@ class TransactionClass
         }
     }
     check_semantic() {
+        if (! this.sys_data.cur_db) {
+            this.response.send('no database selected.');
+            return false;
+        }
         let check_res: boolean, check_err: string;
         let stmt_tree: Tree;
         let tree_i;
