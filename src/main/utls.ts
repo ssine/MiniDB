@@ -111,4 +111,22 @@ function new_window() {
   });
 }
 
-export { init_locks, load_data, save_data, plot_plan, show_panel, new_window };
+function get_help() {
+  return `.help                        | 显示此帮助\r
+.new_window                  | 新建一个终端\r
+.savedata                    | 保存数据\r
+.recover                     | 根据日志进行恢复\r
+.exit                        | 保存数据并退出\r
+.file filename               | 将文件内容作为输入\r
+.createdb database_name      | 创建数据库\r
+.dropdb database_name        | 删除数据库\r
+.usedb database_name         | 使用数据库\r
+.showdb                      | 显示所有数据库\r
+.showtb                      | 显示当前数据库所有表\r
+.planon                      | 显示 SELECT 语句执行计划\r
+.planoff                     | 不显示 SELECT 语句执行计划\r
+.showpanel                   | 显示对数据库内容的可视化\r
+.rawdata                     | 返回系统数据`;
+}
+
+export { init_locks, load_data, save_data, plot_plan, show_panel, new_window, get_help };

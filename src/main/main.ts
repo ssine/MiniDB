@@ -59,7 +59,7 @@ app.on("activate", () => {
 import { parser, Trees, Tree } from '../parser'
 import { SystemData } from './data'
 import * as fs from 'fs'
-import { load_data, save_data, new_window, init_locks } from './utls'
+import { load_data, save_data, get_help, new_window, init_locks } from './utls'
 import {
   create_database,
   drop_database,
@@ -183,6 +183,9 @@ function process_input(input: string, response): string {
         break;
       case 'rawdata':
         res = JSON.stringify(sys_data);
+        break;
+      case 'help':
+        res = get_help();
         break;
     }
     return res;
