@@ -22,6 +22,7 @@ function load_data(): SystemData {
     dt.dbs = {};
     dt.debug = false;
     dt.tx_cnt = 0;
+    dt.runningTxs = [];
     return dt;
   }
 }
