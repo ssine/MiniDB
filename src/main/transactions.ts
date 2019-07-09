@@ -61,6 +61,7 @@ class TransactionClass
         let stmt_tree: Tree;
         let tree_i;
         // Process all the SQL parse trees.
+        // console.log(this.content.length);
         for(tree_i in this.content) {
             stmt_tree = this.content[tree_i];
             if (!stmt_tree) {
@@ -70,6 +71,7 @@ class TransactionClass
             // Perform semantic checking.
             [check_res, check_err] = ql_check(this.sys_data, stmt_tree);
             if (!check_res) {
+                console.log('Transaction ' + this.txID + ' Semantic Check failed')        
                 this.response.send(check_err + '\r\nsemantic check failed!\r\n');
                 return false;
             } 
