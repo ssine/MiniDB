@@ -27,8 +27,10 @@ import {
     CommitTxLog,
     writeLog
 } from './log'
+import { emitter } from './emitter'
 import { getType } from "mime";
 import { readlink } from "fs";
+
 class TransactionClass 
 {
     content: Trees;
@@ -130,6 +132,7 @@ class TransactionClass
         writeLog(beginTxLog);
         setTimeout(this.process_query.bind(this), this.sys_data.debug?5000:0);
         this.sys_data.runningTxs.push(this.txID);
+        emitter.emit('data-modified');
     }
     clear_lock_queue() {
         this.r_locks = []
@@ -192,6 +195,7 @@ class TransactionClass
             
             let idx = this.sys_data.runningTxs.indexOf(this.txID);
             this.sys_data.runningTxs.splice(idx,1);
+            emitter.emit('data-modified');
             this.release_locks();
         } else {
             // next query
