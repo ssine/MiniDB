@@ -22,6 +22,8 @@ npm start
 
 ## CLI Usage
 
+All the input beginning with `.` is a system command:
+
 所有以 `.` 开头的输入均为系统指令：
 
 ```text
@@ -35,6 +37,8 @@ npm start
 .planon                      | 显示 SELECT 语句执行计划
 .planoff                     | 不显示 SELECT 语句执行计划
 ```
+
+All the SQL statements are ended by `;`, supported statements:
 
 所有 SQL 语句输入以 `;` 结尾，目前支持的 SQL 语句：
 
@@ -64,28 +68,33 @@ SET col = expression
 WHERE expression;
 ```
 
-## TODO
-
-* 建立索引
-* 更多的执行计划
-
 ## Showcase
+
+System commands, database management:
 
 系统指令，数据库管理：
 
 <img src="https://github.com/ssine/image_bed/blob/master/syscmd.png" alt="dbm" width=700px />
 
+Sample table:
+
 样例表：
 
 <img src="https://github.com/ssine/image_bed/blob/master/tables.png?cache" alt="ins" width=700px />
+
+Insert statement and complex query (projection, condition, multi-table join):
 
 插入语句与复杂查询（投影，条件，多表连接）：
 
 <img src="https://github.com/ssine/image_bed/blob/master/insert_select.png?cache" alt="sel" width=700px />
 
+Physics plan visualization (corresponding to previous query):
+
 自动绘制物理计划（对应上面的查询）：
 
 <img src="https://github.com/ssine/image_bed/blob/master/plan.png" alt="plan" width=300px />
+
+Update statement:
 
 更新语句：
 
