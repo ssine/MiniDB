@@ -1,9 +1,9 @@
 # MiniDB
 
-* [Overview](https://ssine.ink/zh-cn/posts/dbms-implementation-1/)
-* [Project Structure](https://ssine.ink/zh-cn/posts/dbms-implementation-2/)
-* [SQL Parsing and Running](https://ssine.ink/zh-cn/posts/dbms-implementation-3/)
-* [Persistence](https://ssine.ink/zh-cn/posts/dbms-implementation-4/)
+- [Overview](https://ssine.ink/zh-cn/posts/dbms-implementation-1/)
+- [Project Structure](https://ssine.ink/zh-cn/posts/dbms-implementation-2/)
+- [SQL Parsing and Running](https://ssine.ink/zh-cn/posts/dbms-implementation-3/)
+- [Persistence](https://ssine.ink/zh-cn/posts/dbms-implementation-4/)
 
 ## Setup
 
@@ -74,28 +74,28 @@ System commands, database management:
 
 系统指令，数据库管理：
 
-<img src="https://github.com/ssine/image_bed/blob/master/syscmd.png" alt="dbm" width=700px />
+<img src="doc/syscmd.png" alt="dbm" width=700px />
 
 Sample table:
 
 样例表：
 
-<img src="https://github.com/ssine/image_bed/blob/master/tables.png?cache" alt="ins" width=700px />
+<img src="doc/tables.png" alt="ins" width=700px />
 
 Insert statement and complex query (projection, condition, multi-table join):
 
 插入语句与复杂查询（投影，条件，多表连接）：
 
-<img src="https://github.com/ssine/image_bed/blob/master/insert_select.png?cache" alt="sel" width=700px />
+<img src="doc/insert_select.png" alt="sel" width=700px />
 
 Physics plan visualization (corresponding to previous query):
 
 自动绘制物理计划（对应上面的查询）：
 
-<img src="https://github.com/ssine/image_bed/blob/master/plan.png" alt="plan" width=300px />
+<img src="doc/plan.png" alt="plan" width=300px />
 
 Update statement:
 
 更新语句：
 
-<img src="https://github.com/ssine/image_bed/blob/master/update.png" alt="upd" width=700px />
+<img src="doc/update.png" alt="upd" width=700px />

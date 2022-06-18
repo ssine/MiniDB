@@ -1,3 +1,4 @@
 /src/pages/js/*  linguist-vendored
 /src/pages/css/* linguist-vendored
 *.html           linguist-detectable=true
+*.png filter=lfs diff=lfs merge=lfs -text
